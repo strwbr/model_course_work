@@ -1,0 +1,11 @@
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\bin\Debug\model_course_work.exe.config
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\bin\Debug\model_course_work.exe
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\bin\Debug\model_course_work.pdb
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\obj\Debug\model_course_work.csproj.AssemblyReference.cache
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\obj\Debug\model_course_work.csproj.SuggestedBindingRedirects.cache
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\obj\Debug\model_course_work.Form1.resources
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\obj\Debug\model_course_work.Properties.Resources.resources
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\obj\Debug\model_course_work.csproj.GenerateResource.cache
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\obj\Debug\model_course_work.csproj.CoreCompileInputs.cache
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\obj\Debug\model_course_work.exe
+C:\Users\boris\CodeProjects\CSharpCode\model_course_work\model_course_work\obj\Debug\model_course_work.pdb
