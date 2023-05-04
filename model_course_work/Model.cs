@@ -42,7 +42,7 @@ namespace model_course_work
             else count--;
         }
 
-        public Model(uint a, uint b, uint c)
+        public Model(uint a, uint b, uint c, int d)
         {
             A = a;
             B = b;
@@ -92,127 +92,139 @@ namespace model_course_work
 
         public Model() { }
 
-        public bool X0() //start 
+        // Методы для X-в
+        // Пуск
+        private bool X0()
         {
             return start;
         }
-
-        public bool X1()
+        // BM = 0 - проверка деления на 0
+        private bool X1()
         {
             return BM == 0;
         }
-
-        public bool X2()
+        // АМ = 0 - проверка, что делимое равно 0
+        private bool X2()
         {
             return AM == 0;
         }
-
-        public bool X3() //AM(31) 
+        // AM(31)
+        private bool X3()
         {
-            return (AM >> 31) == 1;
+            return (AM & 0x80000000) != 0; // 0x80000000 = 1000 0000 0000 0000 0000 0000 0000 0000
+            //return (AM >> 31) == 1;
         }
-
-        public bool X4() //сч=0
+        // CR = 0 - проверка окончания цикла
+        private bool X4()
         {
-            if (count == 0) return true;
-            else return false;
+            return count == 0;
+            //if (count == 0) return true;
+            //else return false;
         }
-
-        public bool X5() //С(0) 
+        // С(0)
+        private bool X5()
         {
             //return ((C << 31) >> 31) == 1;
             return (C & 1) == 1;
         }
-
-        public bool X6() //A(15) xor B(15)
+        //A(15) xor B(15)
+        private bool X6()
         {
-            return (A >> 15) != (B >> 15);
+            return (A & 0x8000) != (B & 0x8000); // 0x8000 = 0000 0000 0000 0000 1000 0000 0000 0000
+            //return (A >> 15) != (B >> 15);
         }
 
-        public void Y1() //AM(31;15)=A(14;0)
+        // Методы вычисления Y-в
+        // АМ(29:15) := А(14:0)
+        private void Y1()
         {
             AM = (A & 0x7FFF) << 15;
         }
-
-        public void Y2() //BM(31;15)=B(14;0)
+        // ВМ(29:15) := В(14:0)
+        private void Y2() //BM(31;15)=B(14;0)
         {
-            BM = (B & 0x7FFF) << 15;
+            BM = (B & 0x7FFF) << 15; // 0x7FFF = 0000 0000 0000 0000 0111 1111 1111 1111
         }
-
-        public void Y3() //AM(14;0)=0 
+        // АМ(14:0) 
+        private void Y3()
         {
-            //там уже нули
+            // В АМ(14:0) уже изначально нули
         }
-
-        public void Y4() //BM(14;0)=0  
+        // ВМ(14:0) 
+        private void Y4()
         {
-            //там уже нули
+            // В ВМ(14:0) уже изначально нули
         }
-
-        public void Y5() //AM:=AM+11.неBM(29;0)+1
+        //AM := AM + 11.неBM(29:0)+1
+        private void Y5()
         {
-            AM += (~BM | 0xC0000000) + 1;
+            AM += (~BM | 0xC0000000) + 1; //1100 0000 0000 0000 0000 0000 0000 0000
         }
-
-        public void Y6() //AM:=AM+BM(29;0)
+        //AM := AM + BM(29:0)
+        private void Y6()
         {
-            AM += BM & 0x3FFFFFFF;
+            AM += BM & 0x3FFFFFFF; // 0011 1111 1111 1111 1111 1111 1111 1111
         }
-
-        public void Y7() //Ddd=AM
+        // D: = AM
+        private void Y7() 
         {
             Ddd = AM;
         }
-
-        public void Y8() //BM:=R1(0.BM)
+        // BM := R1(0.BM)
+        private void Y8() 
         {
-            BM = BM >> 1;
+            BM = BM >> 1; // Сдвиг вправо на 1 бит (0 припишется справа автоматически)
         }
-
-        public void Y9() //C=0 
+        //C := 0
+        private void Y9()  
         {
             C = 0;
         }
-
-        public void Y10() //сч=0  
+        // CR := 0
+        private void Y10()   
         {
             count = 0;
         }
-
-        public void Y11() //C:=L1(C.1)  
+        // C := L1(C.1)
+        private void Y11()   
         {
             C = (C << 1) | 1;
         }
-
-        public void Y12() //C:=L1(C.0)  
+        // C := L1(C.0)
+        private void Y12()   
         {
             C = C << 1;
         }
-
-        public void Y13() //AM:=D
+        // AM := D
+        private void Y13() 
         {
             AM = Ddd;
         }
-
-        public void Y14() //cч:=сч-1  
+        // CR := CR-1
+        private void Y14()   
         {
             Counter();
         }
-
-        public void Y15() //С(16;1):=С(16;1)+1
+        // С(16:1) := С(16:1)+1
+        private void Y15() 
         {
             //C += 0x2;
-            C = (C & 0xFFFFFFFE) + 2;
+            C = (C & 0xFFFFFFFE) + 2; // 1111 1111 1111 1111 1111 1111 1111 1110
         }
-
-        public void Y16() //С(16) := 1
+        //С(16) := 1
+        private void Y16() //С(16) := 1
         {
-            C = C | 0x10000;
+            C = C | 0x10000; // 0000 0000 0000 0001 0000 0000 0000 0000
         }
-
-        public void Y17() //PP = 1
+        //ПП := 1
+        private void Y17() //PP := 1
         {
             PP = 1;
+        }
+
+        private void Yk()
+        {
+            end = true;
         }
 
         public int GetPP()
@@ -220,10 +232,6 @@ namespace model_course_work
             return PP;
         }
 
-        public void Yk()
-        {
-            end = true;
-        }
 
         //режим микропрограммы
         public void Microprogram2()
@@ -399,12 +407,14 @@ namespace model_course_work
         public bool Get_X3() { return _X3; }
 
         public bool Get_X2() { return _X2; }
+        public bool Get_X5() { return _X5; }
 
         //Память логических условий
         public void Logic_Memory_Cond(bool[] X)
         {
             _X3 = X[3];
             _X2 = X[2];
+            _X5 = X[5];
         }
 
         //Комбинационная схема векторов Y
