@@ -9,54 +9,47 @@ namespace model_course_work
 {
     class Model
     {
-        uint A; // Делимое
-        uint B; // Делитель
-        uint AM; // Доп. регистр делимого
-        uint BM; // Доп. регистр делителя
-        uint C; // Частное
-        uint Ddd; // Остаток
-        int count; // Счетчик
-        bool start; // Флаг начала
-        bool end; // Флаг завершения
-        int state; // Состояние
-        int PP; // Признак переполнения
-        bool[] X = new bool[7]; // Вектор X-в
+        private uint A; // Делимое
+        private uint B; // Делитель
+        private uint AM; // Доп. регистр делимого
+        private uint BM; // Доп. регистр делителя
+        private uint D; // Остаток
+        private int CR; // Счетчик
+        private bool Start; // Флаг начала работы
+
+        public uint C { get; private set; } // Частное
+        public bool Stop { get; private set; } // Флаг завершения работы
+        public int State { get; private set; } // Состояние
+        public byte PP { get; private set; } // Признак переполнения
+        public bool[] X { get; private set; } // Вектор X-в
+        public byte[] Y { get; private set; } // Вектор У-в
+        public int Dt { get; private set; } // Код состояния (kA)
+
         // Условия для ПЛУ
-        bool _X2;
-        bool _X3;
-        bool _X5;
-        byte[] Y = new byte[18]; // Вектор У-в
-        int Dt; // Код состояния (kA)
+        private bool _X2;
+        private bool _X3;
+        private bool _X5;
 
-        public void SetStart() { start = true; }
+        public Model() { }
 
-        public bool GetEnd() { return end; }
-
-        public int GetState() { return state; }
-
-        public uint GetC() { return C; }
-
-        public void Counter() //вычитание счётчика
-        {
-            if (count == 0) count = 15;
-            else count--;
-        }
-
-        public Model(uint a, uint b, uint c, int d)
+        public Model(uint a, uint b)
         {
             A = a;
             B = b;
-            C = c;
 
+            C = AM = BM = D = 0;
+            //C = 0;
             PP = 0;
-            AM = 0;
-            BM = 0;
-            Ddd = 0;
-            count = 0;
-            end = false;
-            start = false;
-            state = 0;
-            Dt = 0;
+            //AM = 0;
+            //BM = 0;
+            //D = 0;
+            CR = State = Dt = 0;
+            Start = Stop = false;
+            X = new bool[7];
+            Y = new byte[18];
+            //Start = false;
+            //State = 0;
+            //Dt = 0;
             for (int i = 0; i < 18; i++)
                 Y[i] = 0;
             for (int i = 0; i < 7; i++)
@@ -64,39 +57,22 @@ namespace model_course_work
             X[0] = true;
             _X2 = X2();
             _X3 = X3();
+            _X5 = X5();
             X[2] = _X2;
             X[3] = _X3;
+            X[5] = _X5;
         }
 
-        public Model(Model temp) //конструктор с параметром
+        public void Run()
         {
-            A = temp.A;
-            B = temp.B;
-            C = temp.C;
-            AM = temp.AM;
-            BM = temp.BM;
-            Ddd = temp.Ddd;
-            PP = temp.PP;
-            count = 0;
-            end = false;
-            start = false;
-            state = 0;
-            for (int i = 0; i < 18; i++)
-                Y[i] = temp.Y[i];
-            for (int i = 0; i < 7; i++)
-                X[i] = temp.X[i];
-            _X3 = temp._X3;
-            _X2 = temp._X2;
-            Dt = temp.Dt;
+            Start = true;
         }
-
-        public Model() { }
 
         // Методы для X-в
         // Пуск
         private bool X0()
         {
-            return start;
+            return Start;
         }
         // BM = 0 - проверка деления на 0
         private bool X1()
@@ -111,49 +87,44 @@ namespace model_course_work
         // AM(31)
         private bool X3()
         {
-            return (AM & 0x80000000) != 0; // 0x80000000 = 1000 0000 0000 0000 0000 0000 0000 0000
-            //return (AM >> 31) == 1;
+            return (AM & 0x80000000) != 0; // 1000 0000 0000 0000 0000 0000 0000 0000
         }
         // CR = 0 - проверка окончания цикла
         private bool X4()
         {
-            return count == 0;
-            //if (count == 0) return true;
-            //else return false;
+            return CR == 0;
         }
         // С(0)
         private bool X5()
         {
-            //return ((C << 31) >> 31) == 1;
-            return (C & 1) == 1;
+            return (C & 1) == 1; // 0000 ... 0001 = 1
         }
         //A(15) xor B(15)
         private bool X6()
         {
-            return (A & 0x8000) != (B & 0x8000); // 0x8000 = 0000 0000 0000 0000 1000 0000 0000 0000
-            //return (A >> 15) != (B >> 15);
+            return (A & 0x8000) != (B & 0x8000); //0000 0000 0000 0000 1000 0000 0000 0000
         }
 
         // Методы вычисления Y-в
         // АМ(29:15) := А(14:0)
         private void Y1()
         {
-            AM = (A & 0x7FFF) << 15;
+            AM = (A & 0x7FFF) << 15; // 0000 0000 0000 0000 0111 1111 1111 1111
         }
         // ВМ(29:15) := В(14:0)
-        private void Y2() //BM(31;15)=B(14;0)
+        private void Y2()
         {
-            BM = (B & 0x7FFF) << 15; // 0x7FFF = 0000 0000 0000 0000 0111 1111 1111 1111
+            BM = (B & 0x7FFF) << 15; // 0000 0000 0000 0000 0111 1111 1111 1111
         }
-        // АМ(14:0) 
+        // АМ(14:0) := 0 
         private void Y3()
         {
-            // В АМ(14:0) уже изначально нули
+            AM = AM & 0xFFFF8000; // 1111 1111 1111 1111 1000 0000 0000 0000
         }
-        // ВМ(14:0) 
+        // ВМ(14:0) := 0
         private void Y4()
         {
-            // В ВМ(14:0) уже изначально нули
+            BM = BM & 0xFFFF8000; // 1111 1111 1111 1111 1000 0000 0000 0000
         }
         //AM := AM + 11.неBM(29:0)+1
         private void Y5()
@@ -166,47 +137,50 @@ namespace model_course_work
             AM += BM & 0x3FFFFFFF; // 0011 1111 1111 1111 1111 1111 1111 1111
         }
         // D: = AM
-        private void Y7() 
+        private void Y7()
         {
-            Ddd = AM;
+            D = AM;
         }
         // BM := R1(0.BM)
-        private void Y8() 
+        private void Y8()
         {
             BM = BM >> 1; // Сдвиг вправо на 1 бит (0 припишется справа автоматически)
         }
         //C := 0
-        private void Y9()  
+        private void Y9()
         {
             C = 0;
         }
         // CR := 0
-        private void Y10()   
+        private void Y10()
         {
-            count = 0;
+            CR = 0;
         }
         // C := L1(C.1)
-        private void Y11()   
+        private void Y11()
         {
             C = (C << 1) | 1;
         }
         // C := L1(C.0)
-        private void Y12()   
+        private void Y12()
         {
             C = C << 1;
         }
         // AM := D
-        private void Y13() 
+        private void Y13()
         {
-            AM = Ddd;
+            AM = D;
         }
         // CR := CR-1
-        private void Y14()   
+        private void Y14()
         {
-            Counter();
+            //Counter();
+            if (CR == 0)
+                CR = 15;
+            else CR--;
         }
         // С(16:1) := С(16:1)+1
-        private void Y15() 
+        private void Y15()
         {
             //C += 0x2;
             C = (C & 0xFFFFFFFE) + 2; // 1111 1111 1111 1111 1111 1111 1111 1110
@@ -224,24 +198,18 @@ namespace model_course_work
 
         private void Yk()
         {
-            end = true;
+            Stop = true;
         }
 
-        public int GetPP()
+        // Режим микропрограммы
+        public void Microprogram()
         {
-            return PP;
-        }
-
-
-        //режим микропрограммы
-        public void Microprogram2()
-        {
-            switch (state)
+            switch (State)
             {
                 case 0:
                     if (!X0())
                     {
-                        state = 0;
+                        State = 0;
                         break;
                     }
                     if (X0())
@@ -250,7 +218,7 @@ namespace model_course_work
                         Y2();
                         Y3();
                         Y4();
-                        state = 1;
+                        State = 1;
                         break;
                     }
                     break;
@@ -258,19 +226,19 @@ namespace model_course_work
                     if (!X1() && !X2())
                     {
                         Y5();
-                        state = 2;
+                        State = 2;
                         break;
                     }
                     if (!X1() && X2())
                     {
                         Y9();
-                        state = 8;
+                        State = 8;
                         break;
                     }
                     if (X1())
                     {
                         Y17();
-                        state = 8;
+                        State = 8;
                         break;
                     }
                     break;
@@ -282,32 +250,32 @@ namespace model_course_work
                         Y8();
                         Y9();
                         Y10();
-                        state = 3;
+                        State = 3;
                         break;
                     }
                     if (!X3())
                     {
                         Y17();
-                        state = 8;
+                        State = 8;
                         break;
                     }
                     break;
                 case 3:
                     Y5();
-                    state = 4;
+                    State = 4;
                     break;
                 case 4:
                     if (!X3())
                     {
                         Y11();
-                        state = 5;
+                        State = 5;
                         break;
                     }
                     if (X3())
                     {
                         Y12();
                         Y13();
-                        state = 5;
+                        State = 5;
                         break;
                     }
                     break;
@@ -315,31 +283,31 @@ namespace model_course_work
                     Y7();
                     Y8();
                     Y14();
-                    state = 6;
+                    State = 6;
                     break;
                 case 6:
                     if (X4() && !X5() && !X6())
                     {
                         Yk();
-                        state = 9;
+                        State = 9;
                         break;
                     }
                     if (!X4())
                     {
                         Y5();
-                        state = 4;
+                        State = 4;
                         break;
                     }
                     if (X4() && X5())
                     {
                         Y15();
-                        state = 7;
+                        State = 7;
                         break;
                     }
                     if (X4() && !X5() && X6())
                     {
                         Y16();
-                        state = 8;
+                        State = 8;
                         break;
                     }
                     break;
@@ -347,67 +315,22 @@ namespace model_course_work
                     if (!X6())
                     {
                         Yk();
-                        state = 9;
+                        State = 9;
                         break;
                     }
                     if (X6())
                     {
                         Y16();
-                        state = 8;
+                        State = 8;
                         break;
                     }
                     break;
                 case 8:
                     Yk();
-                    state = 9;
+                    State = 9;
                     break;
             }
         }
-
-        //метод, выводит значение операндов на визуальный слой
-        public void ShowValues(ref DataGridView data1, ref DataGridView data2,
-            ref DataGridView data3, ref DataGridView data4)
-        {
-            uint C1 = C;
-            uint A1 = AM;
-            uint B1 = BM;
-            int count1 = count;
-            for (int i = 16; i >= 0; i--)
-            {
-                if (C1 % 2 == 0) { data3[i, 0].Value = 0; }
-                else { data3[i, 0].Value = 1; }
-                C1 = (UInt32)(C1 / 2);
-            }
-            for (int i = 31; i >= 0; i--)
-            {
-                if (A1 % 2 == 0) { data1[i, 0].Value = 0; }
-                else { data1[i, 0].Value = 1; }
-                A1 = (UInt32)(A1 / 2);
-            }
-            for (int i = 31; i >= 0; i--)
-            {
-                if (B1 % 2 == 0) { data2[i, 0].Value = 0; }
-                else { data2[i, 0].Value = 1; }
-                B1 = (UInt32)(B1 / 2);
-            }
-            for (int i = 3; i >= 0; i--)
-            {
-                if (count1 % 2 == 0) { data4[i, 0].Value = 0; }
-                else { data4[i, 0].Value = 1; }
-                count1 = (Int32)(count1 / 2);
-            }
-        }
-
-        public int Get_Dt() { return Dt; }
-
-        public byte[] Get_Y() { return Y; }
-
-        public bool[] Get_X() { return X; }
-
-        public bool Get_X3() { return _X3; }
-
-        public bool Get_X2() { return _X2; }
-        public bool Get_X5() { return _X5; }
 
         //Память логических условий
         public void Logic_Memory_Cond(bool[] X)
@@ -417,15 +340,13 @@ namespace model_course_work
             _X5 = X[5];
         }
 
-        //Комбинационная схема векторов Y
+        // Комбинационная схема векторов Y
         public void KSY(bool[] Xx)
         {
             byte[] NotX = new byte[7];
             byte[] X = new byte[7];
             byte[] A = new byte[9];
-            byte Not2;
-            byte Not3;
-            byte Not5;
+            byte Not2, Not3, Not5;
             byte X2;
             byte X3;
             byte X5;
@@ -467,7 +388,7 @@ namespace model_course_work
             Y[17] = (byte)((A[1] & X[1]) | (A[2] & Not3));
         }
 
-        //Операционный автомат
+        // Операционный автомат
         public void OA(byte[] Y)
         {
             for (int i = 0; i < 18; i++)
@@ -542,7 +463,7 @@ namespace model_course_work
             X[6] = X6();
         }
 
-        //Комбинационная схема векторов D
+        // Комбинационная схема векторов D
         public void KSD(bool[] Xx)
         {
             byte[] NotX = new byte[7];
@@ -582,5 +503,44 @@ namespace model_course_work
                 (A[6] & X[4] & Not5 & X[6]) | (A[7] & X[6])) << 3;
 
         }
+
+        // метод, выводит значение операндов на визуальный слой
+        public void ShowValues(ref DataGridView table_AM, ref DataGridView table_BM, ref DataGridView table_C, ref DataGridView table_CR)
+        {
+            uint tempC = C, tempAM = AM, tempBM = BM;
+            int tempCR = CR;
+
+            for (int i = 16; i >= 0; i--)
+            {
+                table_C[i, 0].Value = tempC % 2;
+                tempC = (UInt32)(tempC / 2);
+            }
+            for (int i = 31; i >= 0; i--)
+            {
+                table_AM[i, 0].Value = tempAM % 2;
+                table_BM[i, 0].Value = tempBM % 2;
+                tempAM = (UInt32)(tempAM / 2);
+                tempBM = (UInt32)(tempBM / 2);
+            }
+            for (int i = 3; i >= 0; i--)
+            {
+                table_CR[i, 0].Value = tempCR % 2;
+                tempCR = (Int32)(tempCR / 2);
+            }
+        }
+
+        public bool Get_X2() { return _X2; }
+        public bool Get_X3() { return _X3; }
+        public bool Get_X5() { return _X5; }
+
+
+        /*        public void Counter()
+        {
+            if (CR == 0) 
+                CR = 15;
+            else CR--;
+
+            //CR = (CR != 0) ? CR - 1 : 15;
+        }*/
     }
 }
