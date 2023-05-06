@@ -18,13 +18,12 @@ namespace model_course_work
         uint B = 0;
         bool is_start = false;
         uint C = 0;
-        int D = 0;
         Model Pr1 = new Model();
 
         public Form1()
         {
             InitializeComponent();
-
+            // Добавление строки в таблицы операндов
             table_C.Rows.Add();
             table_A.Rows.Add();
             table_B.Rows.Add();
@@ -49,55 +48,60 @@ namespace model_course_work
         private void start_Click(object sender, EventArgs e) // пуск
         {
             //Model Program = new Model(A, B, C, D);
-            Pr1 = new Model(A, B);
 
             groupBox2.Enabled = false;
             groupBox4.Enabled = false;
             table_A.ClearSelection();
             table_B.ClearSelection();
             start.Enabled = false;
-            is_start = true;
 
+            Pr1 = new Model(A, B);
             Pr1.Run();
-
+            
+            is_start = true;
             table_A.Enabled = false;
             table_B.Enabled = false;
             checkBox_a0.Checked = true;
-            if (radioButton_auto.Checked)
+            // Если выбран автоматический режим
+            if (Auto_rb.Checked)
             {
                 while (!Pr1.Stop)
                 {
-                    if (radioButton_MP.Checked)
+                    // Если выбран режим микропрограммы
+                    if (MP_rb.Checked)
                     {
                         Pr1.Microprogram();
                         DisplayStatesInGSA(Pr1.State);
-                    }
+                    } // режим ОА и УА
                     else
-                    {
                         OAandYA();
-                    }
-                    Pr1.ShowValues(ref table_AM, ref table_BM, ref table_C, ref data_CR);
+                    // Вывод операндов на форму
+                    Pr1.ViewOperands(ref table_AM, ref table_BM, ref table_C, ref table_CR);
                 }
                 C = Pr1.C;
-                ShowResult();
+                // Вывод результата - переменной С
+                ViewC();
 
                 is_start = false;
                 start.Enabled = false;
                 button_tact.Enabled = false;
                 return;
             }
+            // Активация кнопки такта
             button_tact.Enabled = true;
         }
-
-        private void button_tact_Click(object sender, EventArgs e) //такт
+        
+        // Обработчик нажатия на кнопку Такт
+        private void TactBtn_Click(object sender, EventArgs e) 
         {
-            if (radioButton_tact.Checked)
+            // Если выбран пошаговый режим
+            if (Tact_rb.Checked)
             {
                 if (is_start)
                 {
                     if (!Pr1.Stop)
                     {
-                        if (radioButton_MP.Checked)
+                        if (MP_rb.Checked)
                         {
                             Pr1.Microprogram();
                             DisplayStatesInGSA(Pr1.State);
@@ -106,13 +110,13 @@ namespace model_course_work
                         {
                             OAandYA();
                         }
-                        Pr1.ShowValues(ref table_AM, ref table_BM,
-                            ref table_C, ref data_CR);
+                        Pr1.ViewOperands(ref table_AM, ref table_BM,
+                            ref table_C, ref table_CR);
                     }
                     else
                     {
                         C = Pr1.C;
-                        ShowResult();
+                        ViewC();
                         is_start = false;
                         start.Enabled = false;
                         button_tact.Enabled = false;
@@ -121,41 +125,42 @@ namespace model_course_work
             }
         }
 
-        //заполнение чекбоксов на гса
-        private void DisplayStatesInGSA(int state /*Model Program*/)
+        // Отображение состояния на ГСА
+        private void DisplayStatesInGSA(int state)
         {
+            // Сброс
             ResetCheckboxesInGSA();
             switch (state)
             {
                 case 0:
                     checkBox_a0.Checked = true; break;
                 case 1:
-                    checkBox_a1.Checked = true; break;
+                    gsaA1_cb.Checked = true; break;
                 case 2:
-                    checkBox_a2.Checked = true; break;
+                    gsaA2_cb.Checked = true; break;
                 case 3:
-                    checkBox_a3.Checked = true; break;
+                    gsaA3_cb.Checked = true; break;
                 case 4:
-                    checkBox_a4.Checked = true; break;
+                    gsaA4_cb.Checked = true; break;
                 case 5:
-                    checkBox_a5.Checked = true; break;
+                    gsaA5_cb.Checked = true; break;
                 case 6:
-                    checkBox_a6.Checked = true; break;
+                    gsaA6_cb.Checked = true; break;
                 case 7:
-                    checkBox_a7.Checked = true; break;
+                    gsaA7_cb.Checked = true; break;
                 case 8:
-                    checkBox_a8.Checked = true; break;
+                    gsaA8_cb.Checked = true; break;
                 case 9:
-                    checkBox_a.Checked = true; break;
+                    gsaAk_cb.Checked = true; break;
             }
         }
 
-        private void reset_Click(object sender, EventArgs e) //сброс
+        // Обработчик нажатия на кнопку Сброс
+        private void ResetBtn_Click(object sender, EventArgs e) //сброс
         {
             A = B = C = 0;
             //B = 0;
             //C = 0;
-            D = 0;
             is_start = false;
             start.Enabled = true;
             Pr1 = new Model();
@@ -170,7 +175,7 @@ namespace model_course_work
             checkBox_a0.Checked = true;
 
             ResetCheckboxesInOAandYA();
-            checkBoxa0.Checked = true;
+            A0_cb.Checked = true;
 
             groupBox2.Enabled = true;
             groupBox4.Enabled = true;
@@ -178,7 +183,7 @@ namespace model_course_work
         }
 
         // Обработчик нажатия по ячейкам таблицы ввода числа А
-        private void data_a_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void Data_a_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             // Индекс колонки, на которую нажал пользователь
             int column = e.ColumnIndex;
@@ -189,7 +194,7 @@ namespace model_course_work
         }
 
         // Обработчик нажатия по ячейкам таблицы ввода числа В
-        private void data_b_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void Data_b_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             // Индекс колонки, на которую нажал пользователь
             int column = e.ColumnIndex;
@@ -231,9 +236,79 @@ namespace model_course_work
             return resultStr;
         }
 
-        private void ShowResult() //вывод результата в текстбокс на последнем такте
+        private void OAandYA()
         {
-            if (Pr1.GetPP() == 1)
+            ViewQ(Pr1.Dt);
+
+            // Память логических условий (ПЛУ)
+            Pr1.LogicCondMemory(Pr1.X);
+
+            // Комбинационная схема Y (КСY)
+            Pr1.KSY(Pr1.X);
+            ViewY(Pr1.Y);
+
+            // Операционный автомат (ОА)
+            Pr1.OA(Pr1.Y);
+            ViewX(Pr1.X);
+
+            // Комбинация схема D (КСD)
+            Pr1.KSD(Pr1.X);
+            ViewDt(Pr1.Dt);
+
+            StateChanged(Pr1.Dt);
+        }
+
+        // Вывод Y на форму
+        private void ViewY(bool[] Y)
+        {
+            for (int i = 0; i < Y.Length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        Yk_cb.Checked = Y[i]; break;
+                    case 1:
+                        Y1_cb.Checked = Y[i]; break;
+                    case 2:
+                        Y2_cb.Checked = Y[i]; break;
+                    case 3:
+                        Y3_cb.Checked = Y[i]; break;
+                    case 4:
+                        Y4_cb.Checked = Y[i]; break;
+                    case 5:
+                        Y5_cb.Checked = Y[i]; break;
+                    case 6:
+                        Y6_cb.Checked = Y[i]; break;
+                    case 7:
+                        Y7_cb.Checked = Y[i]; break;
+                    case 8:
+                        Y8_cb.Checked = Y[i]; break;
+                    case 9:
+                        Y9_cb.Checked = Y[i]; break;
+                    case 10:
+                        Y10_cb.Checked = Y[i]; break;
+                    case 11:
+                        Y11_cb.Checked = Y[i]; break;
+                    case 12:
+                        Y12_cb.Checked = Y[i]; break;
+                    case 13:
+                        Y13_cb.Checked = Y[i]; break;
+                    case 14:
+                        Y14_cb.Checked = Y[i]; break;
+                    case 15:
+                        Y15_cb.Checked = Y[i]; break;
+                    case 16:
+                        Y16_cb.Checked = Y[i]; break;
+                    case 17:
+                        Y17_cb.Checked = Y[i]; break;
+                }
+            }
+        }
+
+        // Вывод С на форму
+        private void ViewC()
+        {
+            if (Pr1.PP == 1)
             {
                 textBox_c.Text = "Переполнение";
                 return;
@@ -248,134 +323,52 @@ namespace model_course_work
             textBox_c.Text = GetDecimalValue(table_C);
         }
 
-        private void OAandYA()
-        {
-            ShowQ(Pr1.Get_Dt());
-
-            // Память логических условий (ПЛУ)
-            Pr1.Logic_Memory_Cond(Pr1.Get_X());
-
-            // Комбинационная схема Y (КСY)
-            Pr1.KSY(Pr1.Get_X());
-            ShowY(Pr1.Get_Y());
-
-            // Операционный автомат (ОА)
-            Pr1.OA(Pr1.Get_Y());
-            ShowX(Pr1.Get_X());
-
-            // Комбинация схема D (КСD)
-            Pr1.KSD(Pr1.Get_X());
-            ShowD(Pr1.Get_Dt());
-
-            StateChanged(Pr1.Get_Dt());
-        }
-
-        //Вывод Y на форму
-        private void ShowY(byte[] Y)
-        {
-            for (int i = 0; i < Y.Length; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        checkBox_yk.Checked = (Y[i] != 0); break;
-                    case 1:
-                        checkBox_y1.Checked = (Y[i] != 0); break;
-                    case 2:
-                        checkBox_y2.Checked = (Y[i] != 0); break;
-                    case 3:
-                        checkBox_y3.Checked = (Y[i] != 0); break;
-                    case 4:
-                        checkBox_y4.Checked = (Y[i] != 0); break;
-                    case 5:
-                        checkBox_y5.Checked = (Y[i] != 0); break;
-                    case 6:
-                        checkBox_y6.Checked = (Y[i] != 0); break;
-                    case 7:
-                        checkBox_y7.Checked = (Y[i] != 0); break;
-                    case 8:
-                        checkBox_y8.Checked = (Y[i] != 0); break;
-                    case 9:
-                        checkBox_y9.Checked = (Y[i] != 0); break;
-                    case 10:
-                        checkBox_y10.Checked = (Y[i] != 0); break;
-                    case 11:
-                        checkBox_y11.Checked = (Y[i] != 0); break;
-                    case 12:
-                        checkBox_y12.Checked = (Y[i] != 0); break;
-                    case 13:
-                        checkBox_y13.Checked = (Y[i] != 0); break;
-                    case 14:
-                        checkBox_y14.Checked = (Y[i] != 0); break;
-                    case 15:
-                        checkBox_y15.Checked = (Y[i] != 0); break;
-                    case 16:
-                        checkBox_y16.Checked = (Y[i] != 0); break;
-                    case 17:
-                        checkBox_y17.Checked = (Y[i] != 0); break;
-                }
-            }
-        }
-
         // Вывод X на форму
-        private void ShowX(bool[] X)
+        private void ViewX(bool[] X)
         {
             for (int i = 0; i < X.Length; i++)
             {
                 switch (i)
                 {
                     case 0:
-                        checkBox_x0.Checked = X[i];
-                        break;
+                        X0_cb.Checked = X[i]; break;
                     case 1:
-                        checkBox_x1.Checked = X[i];
-                        break;
+                        X1_cb.Checked = X[i]; break;
                     case 2:
-                        checkBox_x2.Checked = Pr1.Get_X2();
-                        break;
+                        X2_cb.Checked = Pr1.Get_X2(); break;
                     case 3:
-                        checkBox_x3.Checked = Pr1.Get_X3();
-                        break;
+                        X3_cb.Checked = Pr1.Get_X3(); break;
                     case 4:
-                        checkBox_x4.Checked = X[i];
-                        break;
+                        X4_cb.Checked = X[i]; break;
                     case 5:
-                        checkBox_x5.Checked = Pr1.Get_X5();
-                        break;
+                        X5_cb.Checked = Pr1.Get_X5(); break;
                     case 6:
-                        checkBox_x6.Checked = X[i];
-                        break;
+                        X6_cb.Checked = X[i]; break;
                 }
             }
         }
 
-        //Вывод Q на форму
-        private void ShowQ(int Dtr)
+        // Вывод Q на форму
+        private void ViewQ(int Q)
         {
-            string binar = Convert.ToString(Dtr, 2);
-            if (binar.Length == 1) binar = "000" + binar;
-            if (binar.Length == 2) binar = "00" + binar;
-            if (binar.Length == 3) binar = "0" + binar;
-            checkBox_Q0.Checked = (binar[3] != '0');
-            checkBox_Q1.Checked = (binar[2] != '0');
-            checkBox_Q2.Checked = (binar[1] != '0');
-            checkBox_Q3.Checked = (binar[0] != '0');
+            string strQ = ConvertTo4bit(Q);
+            Q0_cb.Checked = (strQ[3] != '0');
+            Q1_cb.Checked = (strQ[2] != '0');
+            Q2_cb.Checked = (strQ[1] != '0');
+            Q3_cb.Checked = (strQ[0] != '0');
         }
 
-        //Вывод D на форму
-        private void ShowD(int Dtr)
+        // Вывод Dt на форму
+        private void ViewDt(int Dt)
         {
-            string binar = Convert.ToString(Dtr, 2);
-            if (binar.Length == 1) binar = "000" + binar;
-            if (binar.Length == 2) binar = "00" + binar;
-            if (binar.Length == 3) binar = "0" + binar;
-            checkBox_D0.Checked = (binar[3] != '0');
-            checkBox_D1.Checked = (binar[2] != '0');
-            checkBox_D2.Checked = (binar[1] != '0');
-            checkBox_D3.Checked = (binar[0] != '0');
+            string strDt = ConvertTo4bit(Dt);
+            D0_cb.Checked = (strDt[3] != '0');
+            D1_cb.Checked = (strDt[2] != '0');
+            D2_cb.Checked = (strDt[1] != '0');
+            D3_cb.Checked = (strDt[0] != '0');
         }
 
-        //Вывод A на форму
+        // Отображение состояния ГСА на форме
         private void StateChanged(int state)
         {
             ResetCheckboxesInGSA();
@@ -383,40 +376,40 @@ namespace model_course_work
             switch (state)
             {
                 case 0:
-                    checkBox_a.Checked = true;
-                    checkBoxa0.Checked = true;
+                    gsaAk_cb.Checked = true;
+                    A0_cb.Checked = true;
                     break;
                 case 1:
-                    checkBox_a1.Checked = true;
-                    checkBoxa1.Checked = true;
+                    gsaA1_cb.Checked = true;
+                    A1_cb.Checked = true;
                     break;
                 case 2:
-                    checkBox_a2.Checked = true;
-                    checkBoxa2.Checked = true;
+                    gsaA2_cb.Checked = true;
+                    A2_cb.Checked = true;
                     break;
                 case 3:
-                    checkBox_a3.Checked = true;
-                    checkBoxa3.Checked = true;
+                    gsaA3_cb.Checked = true;
+                    A3_cb.Checked = true;
                     break;
                 case 4:
-                    checkBox_a4.Checked = true;
-                    checkBoxa4.Checked = true;
+                    gsaA4_cb.Checked = true;
+                    A4_cb.Checked = true;
                     break;
                 case 5:
-                    checkBox_a5.Checked = true;
-                    checkBoxa5.Checked = true;
+                    gsaA5_cb.Checked = true;
+                    A5_cb.Checked = true;
                     break;
                 case 6:
-                    checkBox_a6.Checked = true;
-                    checkBoxa6.Checked = true;
+                    gsaA6_cb.Checked = true;
+                    A6_cb.Checked = true;
                     break;
                 case 7:
-                    checkBox_a7.Checked = true;
-                    checkBoxa7.Checked = true;
+                    gsaA7_cb.Checked = true;
+                    A7_cb.Checked = true;
                     break;
                 case 8:
-                    checkBox_a8.Checked = true;
-                    checkBoxa8.Checked = true;
+                    gsaA8_cb.Checked = true;
+                    A8_cb.Checked = true;
                     break;
             }
         }
@@ -435,9 +428,19 @@ namespace model_course_work
                 table_C[i, 0].Value = 0;
                 table_C[i, 0].Value = 0;
                 if (i < 4)
-                    data_CR[i, 0].Value = 0;
+                    table_CR[i, 0].Value = 0;
             }
             table_C[16, 0].Value = 0;
+        }
+
+        // Преобразование числа в строку длиной 4 элемента 
+        private string ConvertTo4bit(int n)
+        {
+            string str = Convert.ToString(n, 2);
+            if (str.Length == 1) str = "000" + str;
+            if (str.Length == 2) str = "00" + str;
+            if (str.Length == 3) str = "0" + str;
+            return str;
         }
 
         // Сброс флажков состояний на ГСА

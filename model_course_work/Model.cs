@@ -22,7 +22,8 @@ namespace model_course_work
         public int State { get; private set; } // Состояние
         public byte PP { get; private set; } // Признак переполнения
         public bool[] X { get; private set; } // Вектор X-в
-        public byte[] Y { get; private set; } // Вектор У-в
+        //public byte[] Y { get; private set; } // Вектор У-в
+        public bool[] Y { get; private set; } // Вектор У-в
         public int Dt { get; private set; } // Код состояния (kA)
 
         // Условия для ПЛУ
@@ -46,12 +47,13 @@ namespace model_course_work
             CR = State = Dt = 0;
             Start = Stop = false;
             X = new bool[7];
-            Y = new byte[18];
+            //Y = new byte[18];
+            Y = new bool[18];
             //Start = false;
             //State = 0;
             //Dt = 0;
             for (int i = 0; i < 18; i++)
-                Y[i] = 0;
+                Y[i] = false;
             for (int i = 0; i < 7; i++)
                 X[i] = false;
             X[0] = true;
@@ -333,7 +335,7 @@ namespace model_course_work
         }
 
         //Память логических условий
-        public void Logic_Memory_Cond(bool[] X)
+        public void LogicCondMemory(bool[] X)
         {
             _X3 = X[3];
             _X2 = X[2];
@@ -341,59 +343,147 @@ namespace model_course_work
         }
 
         // Комбинационная схема векторов Y
-        public void KSY(bool[] Xx)
+        public void KSY(bool[] vectorX)
         {
-            byte[] NotX = new byte[7];
-            byte[] X = new byte[7];
-            byte[] A = new byte[9];
-            byte Not2, Not3, Not5;
-            byte X2;
-            byte X3;
-            byte X5;
+            bool[] A = new bool[9];
+            A[Dt] = true;
 
-            if (_X3) { X3 = 1; Not3 = 0; }
-            else { X3 = 0; Not3 = 1; }
-
-            if (_X2) { X2 = 1; Not2 = 0; }
-            else { X2 = 0; Not2 = 1; }
-
-            if (_X5) { X5 = 1; Not5 = 0; }
-            else { X5 = 0; Not5 = 1; }
-
-            A[Dt] = 1;
-
-            for (int i = 0; i < 7; i++) //по всем иксам, 
-            {
-                if (Xx[i]) { X[i] = 1; NotX[i] = 0; }
-                else { X[i] = 0; NotX[i] = 1; }
-            }
-
-            Y[0] = (byte)((A[6] & X[4] & Not5 & NotX[6]) | (A[7] & NotX[6]) | (A[8])); //yk
-            Y[1] = (byte)(A[0] & X[0]);
+            // СРАВНИТЬ!!!!!!!
+            Y[0] = ((A[6] & X[4] & !_X5 & !X[6]) | (A[7] & !X[6]) | (A[8])); //yk
+            Y[1] = (A[0] & X[0]);
             Y[2] = Y[1];
             Y[3] = Y[1];
             Y[4] = Y[1];
-            Y[5] = (byte)((A[1] & NotX[1] & Not2) | (A[3]) | (A[6] & NotX[4]));
-            Y[6] = (byte)(A[2] & X3);
-            Y[7] = (byte)((A[2] & X3) | (A[5]));
+            Y[5] = ((A[1] & !X[1] & !_X2) | (A[3]) | (A[6] & !X[4]));
+            Y[6] = (A[2] & _X3);
+            Y[7] = ((A[2] & _X3) | (A[5]));
             Y[8] = Y[7];
-            Y[9] = (byte)((A[2] & X3) | (A[1] & NotX[1] & X2));
+            Y[9] = ((A[2] & _X3) | (A[1] & !X[1] & _X2));
             Y[10] = Y[6];
-            Y[11] = (byte)(A[4] & Not3);
-            Y[12] = (byte)(A[4] & X3);
+            Y[11] = (A[4] & !_X3);
+            Y[12] = (A[4] & _X3);
             Y[13] = Y[12];
             Y[14] = A[5];
-            Y[15] = (byte)(A[6] & X[4] & X5);
-            Y[16] = (byte)((A[6] & X[4] & Not5 & X[6]) | (A[7] & X[6]));
-            Y[17] = (byte)((A[1] & X[1]) | (A[2] & Not3));
+            Y[15] = (A[6] & X[4] & _X5);
+            Y[16] = ((A[6] & X[4] & !_X5 & X[6]) | (A[7] & X[6]));
+            Y[17] = ((A[1] & X[1]) | (A[2] & !_X3));
         }
 
+        // Комбинационная схема векторов D
+        public void KSD(bool[] vectorX)
+        {
+            bool[] A = new bool[9];
+            A[Dt] = true;
+
+            // СРАВНИТЬ!!!!!!!!!!!!
+            Dt = ((A[0] & X[0]) | (A[2] & _X3) | (A[4]) | (A[6] & X[4] & _X5)) ? 1 : 0;
+            Dt += ((A[1] & !X[1] & !_X2) | (A[2] & _X3) | (A[5]) | (A[6] & X[4] & _X5)) ? 2 : 0;
+            Dt += ((A[3]) | (A[6] & !X[4]) | (A[4]) | (A[5]) | (A[6] & X[4] & _X5)) ? 4 : 0;
+            Dt += ((A[1] & !X[1] & _X2) | (A[1] & X[1]) | (A[2] & !_X3) | (A[6] & X[4] & !_X5 & X[6]) | (A[7] & X[6])) ? 8 : 0;
+        }
+        // Комбинационная схема векторов Y
+        //public void KSY(bool[] vectorX)
+        //{
+        //    byte[] NotX = new byte[7];
+        //    byte[] X = new byte[7];
+        //    byte[] A = new byte[9];
+
+        //    byte tempX2 = Convert.ToByte(_X2);
+        //    byte tempX3 = Convert.ToByte(_X2);
+        //    byte tempX5 = Convert.ToByte(_X2);
+
+        //    byte NotX2 = (byte)(1 - tempX2);
+        //    byte NotX3 = (byte)(1 - tempX3);
+        //    byte NotX5 = ((byte)(1 - tempX5));
+
+        //    for(int i = 0; i < vectorX.Length; i++)
+        //    {
+        //        X[i] = Convert.ToByte(vectorX[i]);
+        //        NotX[i] = (byte)(1 - X[i]);
+        //    }
+
+        //    //if (_X3) { tempX3 = 1; NotX3 = 0; }
+        //    //else { tempX3 = 0; NotX3 = 1; }
+
+        //    //if (_X2) { tempX2 = 1; NotX2 = 0; }
+        //    //else { tempX2 = 0; NotX2 = 1; }
+
+        //    //if (_X5) { tempX5 = 1; NotX5 = 0; }
+        //    //else { tempX5 = 0; NotX5 = 1; }
+
+        //    A[Dt] = 1;
+
+        //    //for (int i = 0; i < 7; i++) //по всем иксам, 
+        //    //{
+        //    //    if (vectorX[i]) { X[i] = 1; NotX[i] = 0; }
+        //    //    else { X[i] = 0; NotX[i] = 1; }
+        //    //}
+
+        //    Y[0] = (byte)((A[6] & X[4] & NotX5 & NotX[6]) | (A[7] & NotX[6]) | (A[8])); //yk
+        //    Y[1] = (byte)(A[0] & X[0]);
+        //    Y[2] = Y[1];
+        //    Y[3] = Y[1];
+        //    Y[4] = Y[1];
+        //    Y[5] = (byte)((A[1] & NotX[1] & NotX2) | (A[3]) | (A[6] & NotX[4]));
+        //    Y[6] = (byte)(A[2] & tempX3);
+        //    Y[7] = (byte)((A[2] & tempX3) | (A[5]));
+        //    Y[8] = Y[7];
+        //    Y[9] = (byte)((A[2] & tempX3) | (A[1] & NotX[1] & tempX2));
+        //    Y[10] = Y[6];
+        //    Y[11] = (byte)(A[4] & NotX3);
+        //    Y[12] = (byte)(A[4] & tempX3);
+        //    Y[13] = Y[12];
+        //    Y[14] = A[5];
+        //    Y[15] = (byte)(A[6] & X[4] & tempX5);
+        //    Y[16] = (byte)((A[6] & X[4] & NotX5 & X[6]) | (A[7] & X[6]));
+        //    Y[17] = (byte)((A[1] & X[1]) | (A[2] & NotX3));
+        //}
+
+        //// Комбинационная схема векторов D
+        //public void KSD(bool[] vectorX)
+        //{
+        //    byte[] NotX = new byte[7];
+        //    byte[] X = new byte[7];
+        //    byte[] A = new byte[9];
+        //    byte Not2, Not3, Not5;
+        //    byte X2, X3, X5;
+
+        //    if (_X2) { X2 = 1; Not2 = 0; }
+        //    else { X2 = 0; Not2 = 1; }
+
+        //    if (_X3) { X3 = 1; Not3 = 0; }
+        //    else { X3 = 0; Not3 = 1; }
+
+        //    if (_X5) { X5 = 1; Not5 = 0; }
+        //    else { X5 = 0; Not5 = 1; }
+
+        //    for (int i = 0; i < 7; i++)
+        //    {
+        //        if (vectorX[i]) { X[i] = 1; NotX[i] = 0; }
+        //        else { X[i] = 0; NotX[i] = 1; }
+        //    }
+
+        //    A[Dt] = 1;
+
+        //    Dt = (byte)((A[0] & X[0]) | (A[2] & X3) | (A[4]) | (A[6] & X[4] & X5));
+
+        //    Dt += (byte)((A[1] & NotX[1] & Not2) | (A[2] & X3) | (A[5]) | (A[6] & X[4] & X5)) << 1;
+
+        //    Dt += (byte)((A[3]) | (A[6] & NotX[4]) | (A[4]) | (A[5]) | (A[6] & X[4] & X5)) << 2;
+
+        //    Dt += (byte)((A[1] & NotX[1] & X2) | (A[1] & X[1]) | (A[2] & Not3) |
+        //        (A[6] & X[4] & Not5 & X[6]) | (A[7] & X[6])) << 3;
+
+        //}
+
+
+
         // Операционный автомат
-        public void OA(byte[] Y)
+        public void OA(bool[] Y)
         {
             for (int i = 0; i < 18; i++)
             {
-                if (Y[i] != 0)
+                if (Y[i])
                 {
                     switch (i)
                     {
@@ -463,49 +553,10 @@ namespace model_course_work
             X[6] = X6();
         }
 
-        // Комбинационная схема векторов D
-        public void KSD(bool[] Xx)
-        {
-            byte[] NotX = new byte[7];
-            byte[] X = new byte[7];
-            byte[] A = new byte[9];
-            byte Not2;
-            byte Not3;
-            byte Not5;
-            byte X2;
-            byte X3;
-            byte X5;
 
-            if (_X2) { X2 = 1; Not2 = 0; }
-            else { X2 = 0; Not2 = 1; }
-
-            if (_X3) { X3 = 1; Not3 = 0; }
-            else { X3 = 0; Not3 = 1; }
-
-            if (_X5) { X5 = 1; Not5 = 0; }
-            else { X5 = 0; Not5 = 1; }
-
-            for (int i = 0; i < 7; i++)
-            {
-                if (Xx[i]) { X[i] = 1; NotX[i] = 0; }
-                else { X[i] = 0; NotX[i] = 1; }
-            }
-
-            A[Dt] = 1;
-
-            Dt = (byte)((A[0] & X[0]) | (A[2] & X3) | (A[4]) | (A[6] & X[4] & X5));
-
-            Dt += (byte)((A[1] & NotX[1] & Not2) | (A[2] & X3) | (A[5]) | (A[6] & X[4] & X5)) << 1;
-
-            Dt += (byte)((A[3]) | (A[6] & NotX[4]) | (A[4]) | (A[5]) | (A[6] & X[4] & X5)) << 2;
-
-            Dt += (byte)((A[1] & NotX[1] & X2) | (A[1] & X[1]) | (A[2] & Not3) |
-                (A[6] & X[4] & Not5 & X[6]) | (A[7] & X[6])) << 3;
-
-        }
 
         // метод, выводит значение операндов на визуальный слой
-        public void ShowValues(ref DataGridView table_AM, ref DataGridView table_BM, ref DataGridView table_C, ref DataGridView table_CR)
+        public void ViewOperands(ref DataGridView table_AM, ref DataGridView table_BM, ref DataGridView table_C, ref DataGridView table_CR)
         {
             uint tempC = C, tempAM = AM, tempBM = BM;
             int tempCR = CR;
