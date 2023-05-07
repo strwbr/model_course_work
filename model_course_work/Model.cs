@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 namespace model_course_work
 {
+    // Класс, содержащий основную логику программы
     class Model
     {
         private uint A; // Делимое
@@ -23,7 +24,6 @@ namespace model_course_work
         public int State { get; private set; } // Состояние
         public byte PP { get; private set; } // Признак переполнения
         public bool[] X { get; private set; } // Вектор X-в
-        //public byte[] Y { get; private set; } // Вектор У-в
         public bool[] Y { get; private set; } // Вектор У-в
         public int Dt { get; private set; } // Код состояния (kA)
 
@@ -31,29 +31,21 @@ namespace model_course_work
         private bool _X2;
         private bool _X3;
         private bool _X5;
-
+        // Конструктор по умолчанию
         public Model() { }
-
+        // Конструктор с параметрами А - делимое, В - делитель
         public Model(uint a, uint b)
         {
             A = a;
             B = b;
 
             C = AM = BM = D = 0;
-            //C = 0;
             PP = 0;
-            //AM = 0;
-            //BM = 0;
-            //D = 0;
             CR = State = Dt = 0;
             start = Stop = false;
             X = new bool[7];
-            //Y = new byte[18];
             Y = new bool[18];
             states = new bool[9];
-            //start = false;
-            //State = 0;
-            //Dt = 0;
             for (int i = 0; i < 18; i++)
                 Y[i] = false;
             for (int i = 0; i < 7; i++)
@@ -67,6 +59,7 @@ namespace model_course_work
             X[5] = _X5;
         }
 
+        // Запуск выполнения моделирования
         public void Run()
         {
             start = true;
@@ -130,7 +123,7 @@ namespace model_course_work
         {
             BM = BM & 0xFFFF8000; // 1111 1111 1111 1111 1000 0000 0000 0000
         }
-        //AM := AM + 11.неBM(29:0)+1
+        //AM := AM + 11.!BM(29:0)+1
         private void Y5()
         {
             AM += (~BM | 0xC0000000) + 1; //1100 0000 0000 0000 0000 0000 0000 0000
@@ -148,7 +141,7 @@ namespace model_course_work
         // BM := R1(0.BM)
         private void Y8()
         {
-            BM = BM >> 1; // Сдвиг вправо на 1 бит (0 припишется справа автоматически)
+            BM = BM >> 1; 
         }
         //C := 0
         private void Y9()
@@ -190,12 +183,12 @@ namespace model_course_work
             C = (C & 0xFFFFFFFE) + 2; // 1111 1111 1111 1111 1111 1111 1111 1110
         }
         //С(16) := 1
-        private void Y16() //С(16) := 1
+        private void Y16() 
         {
             C = C | 0x10000; // 0000 0000 0000 0001 0000 0000 0000 0000
         }
         //ПП := 1
-        private void Y17() //PP := 1
+        private void Y17()
         {
             PP = 1;
         }
@@ -336,6 +329,7 @@ namespace model_course_work
             }
         }
 
+        // Дешифратор
         public void Decoder()
         {
             for (int i = 0; i < states.Length; i++)
@@ -345,6 +339,7 @@ namespace model_course_work
             states[State] = true;
         }
 
+        // Память состояний
         public void StateMemory()
         {
             State = Dt;
@@ -359,12 +354,11 @@ namespace model_course_work
         }
 
         // Комбинационная схема векторов Y
-        public void KSY(/*bool[] X*/)
+        public void KSY()
         {
             bool[] A = states;
-            //A[State] = true;
-
-            Y[0] = ((A[6] & X[4] & !_X5 & !X[6]) | (A[7] & !X[6]) | (A[8])); //yk
+            // Вычисление операций У, который должны быть выполнены в этом такте
+            Y[0] = ((A[6] & X[4] & !_X5 & !X[6]) | (A[7] & !X[6]) | (A[8])); // yk
             Y[1] = (A[0] & X[0]);
             Y[2] = Y[1];
             Y[3] = Y[1];
@@ -385,11 +379,10 @@ namespace model_course_work
         }
 
         // Комбинационная схема векторов D
-        public void KSD(/*bool[] X*/)
+        public void KSD()
         {
             bool[] A = states;
-
-            // СРАВНИТЬ!!!!!!!!!!!!
+            // Вычисление кода следующего состояния
             Dt = ((A[0] & X[0]) | (A[2] & _X3) | (A[4]) | (A[6] & X[4] & _X5)) ? 1 : 0;
             Dt += ((A[1] & !X[1] & !_X2) | (A[2] & _X3) | (A[5]) | (A[6] & X[4] & _X5)) ? 2 : 0;
             Dt += ((A[3]) | (A[6] & !X[4]) | (A[4]) | (A[5]) | (A[6] & X[4] & _X5)) ? 4 : 0;
@@ -397,12 +390,15 @@ namespace model_course_work
         }
 
         // Операционный автомат
-        public void OA(bool[] Y)
+        public void OA(/*bool[] Y*/)
         {
-            for (int i = 0; i < 18; i++)
+            // Проход по вектору операций Y
+            for (int i = 0; i < Y.Length; i++)
             {
+                // Поиск операции Y, которая должна выполнится
                 if (Y[i])
                 {
+                    // Вызов соответствующего метода выполнения
                     switch (i)
                     {
                         case 0: Yk(); break;
@@ -426,6 +422,7 @@ namespace model_course_work
                     }
                 }
             }
+            // Вычисление условий Х для следующего такта
             X[0] = X0();
             X[1] = X1();
             X[2] = X2();
@@ -435,12 +432,13 @@ namespace model_course_work
             X[6] = X6();
         }
 
-        // метод, выводит значение операндов на визуальный слой
+        // Вывод значений операндов на визуальный слой
         public void ViewOperands(ref DataGridView table_AM, ref DataGridView table_BM, ref DataGridView table_C, ref DataGridView table_CR)
         {
+            // Инициализация временных переменных для операндов
             uint tempC = C, tempAM = AM, tempBM = BM;
             int tempCR = CR;
-
+            // Перевод в двоичную СЧ и заполнение элементов формы
             for (int i = 16; i >= 0; i--)
             {
                 table_C[i, 0].Value = tempC % 2;
@@ -459,7 +457,7 @@ namespace model_course_work
                 tempCR = (Int32)(tempCR / 2);
             }
         }
-
+        // Геттеры для x для ПЛУ
         public bool Get_X2() { return _X2; }
         public bool Get_X3() { return _X3; }
         public bool Get_X5() { return _X5; }
