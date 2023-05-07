@@ -15,7 +15,8 @@ namespace model_course_work
         private uint BM; // Доп. регистр делителя
         private uint D; // Остаток
         private int CR; // Счетчик
-        private bool Start; // Флаг начала работы
+        private bool start; // Флаг начала работы
+        private bool[] states;
 
         public uint C { get; private set; } // Частное
         public bool Stop { get; private set; } // Флаг завершения работы
@@ -45,11 +46,12 @@ namespace model_course_work
             //BM = 0;
             //D = 0;
             CR = State = Dt = 0;
-            Start = Stop = false;
+            start = Stop = false;
             X = new bool[7];
             //Y = new byte[18];
             Y = new bool[18];
-            //Start = false;
+            states = new bool[9];
+            //start = false;
             //State = 0;
             //Dt = 0;
             for (int i = 0; i < 18; i++)
@@ -67,14 +69,14 @@ namespace model_course_work
 
         public void Run()
         {
-            Start = true;
+            start = true;
         }
 
         // Методы для X-в
         // Пуск
         private bool X0()
         {
-            return Start;
+            return start;
         }
         // BM = 0 - проверка деления на 0
         private bool X1()
@@ -334,7 +336,21 @@ namespace model_course_work
             }
         }
 
-        //Память логических условий
+        public void Decoder()
+        {
+            for (int i = 0; i < states.Length; i++)
+            {
+                states[i] = false;
+            }
+            states[State] = true;
+        }
+
+        public void StateMemory()
+        {
+            State = Dt;
+        }
+
+        // Память логических условий
         public void LogicCondMemory(bool[] X)
         {
             _X3 = X[3];
@@ -343,12 +359,11 @@ namespace model_course_work
         }
 
         // Комбинационная схема векторов Y
-        public void KSY(bool[] vectorX)
+        public void KSY(/*bool[] X*/)
         {
-            bool[] A = new bool[9];
-            A[Dt] = true;
+            bool[] A = states;
+            //A[State] = true;
 
-            // СРАВНИТЬ!!!!!!!
             Y[0] = ((A[6] & X[4] & !_X5 & !X[6]) | (A[7] & !X[6]) | (A[8])); //yk
             Y[1] = (A[0] & X[0]);
             Y[2] = Y[1];
@@ -370,10 +385,9 @@ namespace model_course_work
         }
 
         // Комбинационная схема векторов D
-        public void KSD(bool[] vectorX)
+        public void KSD(/*bool[] X*/)
         {
-            bool[] A = new bool[9];
-            A[Dt] = true;
+            bool[] A = states;
 
             // СРАВНИТЬ!!!!!!!!!!!!
             Dt = ((A[0] & X[0]) | (A[2] & _X3) | (A[4]) | (A[6] & X[4] & _X5)) ? 1 : 0;
@@ -381,6 +395,85 @@ namespace model_course_work
             Dt += ((A[3]) | (A[6] & !X[4]) | (A[4]) | (A[5]) | (A[6] & X[4] & _X5)) ? 4 : 0;
             Dt += ((A[1] & !X[1] & _X2) | (A[1] & X[1]) | (A[2] & !_X3) | (A[6] & X[4] & !_X5 & X[6]) | (A[7] & X[6])) ? 8 : 0;
         }
+
+        // Операционный автомат
+        public void OA(bool[] Y)
+        {
+            for (int i = 0; i < 18; i++)
+            {
+                if (Y[i])
+                {
+                    switch (i)
+                    {
+                        case 0: Yk(); break;
+                        case 1: Y1(); break;
+                        case 2: Y2(); break;
+                        case 3: Y3(); break;
+                        case 4: Y4(); break;
+                        case 5: Y5(); break;
+                        case 6: Y6(); break;
+                        case 7: Y7(); break;
+                        case 8: Y8(); break;
+                        case 9: Y9(); break;
+                        case 10: Y10(); break;
+                        case 11: Y11(); break;
+                        case 12: Y12(); break;
+                        case 13: Y13(); break;
+                        case 14: Y14(); break;
+                        case 15: Y15(); break;
+                        case 16: Y16(); break;
+                        case 17: Y17(); break;
+                    }
+                }
+            }
+            X[0] = X0();
+            X[1] = X1();
+            X[2] = X2();
+            X[3] = X3();
+            X[4] = X4();
+            X[5] = X5();
+            X[6] = X6();
+        }
+
+        // метод, выводит значение операндов на визуальный слой
+        public void ViewOperands(ref DataGridView table_AM, ref DataGridView table_BM, ref DataGridView table_C, ref DataGridView table_CR)
+        {
+            uint tempC = C, tempAM = AM, tempBM = BM;
+            int tempCR = CR;
+
+            for (int i = 16; i >= 0; i--)
+            {
+                table_C[i, 0].Value = tempC % 2;
+                tempC = (UInt32)(tempC / 2);
+            }
+            for (int i = 31; i >= 0; i--)
+            {
+                table_AM[i, 0].Value = tempAM % 2;
+                table_BM[i, 0].Value = tempBM % 2;
+                tempAM = (UInt32)(tempAM / 2);
+                tempBM = (UInt32)(tempBM / 2);
+            }
+            for (int i = 3; i >= 0; i--)
+            {
+                table_CR[i, 0].Value = tempCR % 2;
+                tempCR = (Int32)(tempCR / 2);
+            }
+        }
+
+        public bool Get_X2() { return _X2; }
+        public bool Get_X3() { return _X3; }
+        public bool Get_X5() { return _X5; }
+
+
+        /*        public void Counter()
+        {
+            if (CR == 0) 
+                CR = 15;
+            else CR--;
+
+            //CR = (CR != 0) ? CR - 1 : 15;
+        }*/
+
         // Комбинационная схема векторов Y
         //public void KSY(bool[] vectorX)
         //{
@@ -475,123 +568,5 @@ namespace model_course_work
         //        (A[6] & X[4] & Not5 & X[6]) | (A[7] & X[6])) << 3;
 
         //}
-
-
-
-        // Операционный автомат
-        public void OA(bool[] Y)
-        {
-            for (int i = 0; i < 18; i++)
-            {
-                if (Y[i])
-                {
-                    switch (i)
-                    {
-                        case 0:
-                            Yk();
-                            break;
-                        case 1:
-                            Y1();
-                            break;
-                        case 2:
-                            Y2();
-                            break;
-                        case 3:
-                            Y3();
-                            break;
-                        case 4:
-                            Y4();
-                            break;
-                        case 5:
-                            Y5();
-                            break;
-                        case 6:
-                            Y6();
-                            break;
-                        case 7:
-                            Y7();
-                            break;
-                        case 8:
-                            Y8();
-                            break;
-                        case 9:
-                            Y9();
-                            break;
-                        case 10:
-                            Y10();
-                            break;
-                        case 11:
-                            Y11();
-                            break;
-                        case 12:
-                            Y12();
-                            break;
-                        case 13:
-                            Y13();
-                            break;
-                        case 14:
-                            Y14();
-                            break;
-                        case 15:
-                            Y15();
-                            break;
-                        case 16:
-                            Y16();
-                            break;
-                        case 17:
-                            Y17();
-                            break;
-                    }
-                }
-            }
-            X[0] = X0();
-            X[1] = X1();
-            X[2] = X2();
-            X[3] = X3();
-            X[4] = X4();
-            X[5] = X5();
-            X[6] = X6();
-        }
-
-
-
-        // метод, выводит значение операндов на визуальный слой
-        public void ViewOperands(ref DataGridView table_AM, ref DataGridView table_BM, ref DataGridView table_C, ref DataGridView table_CR)
-        {
-            uint tempC = C, tempAM = AM, tempBM = BM;
-            int tempCR = CR;
-
-            for (int i = 16; i >= 0; i--)
-            {
-                table_C[i, 0].Value = tempC % 2;
-                tempC = (UInt32)(tempC / 2);
-            }
-            for (int i = 31; i >= 0; i--)
-            {
-                table_AM[i, 0].Value = tempAM % 2;
-                table_BM[i, 0].Value = tempBM % 2;
-                tempAM = (UInt32)(tempAM / 2);
-                tempBM = (UInt32)(tempBM / 2);
-            }
-            for (int i = 3; i >= 0; i--)
-            {
-                table_CR[i, 0].Value = tempCR % 2;
-                tempCR = (Int32)(tempCR / 2);
-            }
-        }
-
-        public bool Get_X2() { return _X2; }
-        public bool Get_X3() { return _X3; }
-        public bool Get_X5() { return _X5; }
-
-
-        /*        public void Counter()
-        {
-            if (CR == 0) 
-                CR = 15;
-            else CR--;
-
-            //CR = (CR != 0) ? CR - 1 : 15;
-        }*/
     }
 }

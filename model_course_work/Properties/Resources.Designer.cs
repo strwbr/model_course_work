@@ -63,6 +63,66 @@ namespace model_course_work.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap gsa {
+            get {
+                object obj = ResourceManager.GetObject("gsa", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap oa_and_ya {
+            get {
+                object obj = ResourceManager.GetObject("oa_and_ya", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap oa_and_ya1 {
+            get {
+                object obj = ResourceManager.GetObject("oa_and_ya1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap oa_and_ya11 {
+            get {
+                object obj = ResourceManager.GetObject("oa_and_ya11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap oa_and_ya12 {
+            get {
+                object obj = ResourceManager.GetObject("oa_and_ya12", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap oa_and_ya2 {
+            get {
+                object obj = ResourceManager.GetObject("oa_and_ya2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap oy {
             get {
                 object obj = ResourceManager.GetObject("oy", resourceCulture);
@@ -96,6 +156,16 @@ namespace model_course_work.Properties {
         internal static System.Drawing.Bitmap pic21 {
             get {
                 object obj = ResourceManager.GetObject("pic21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap pic22 {
+            get {
+                object obj = ResourceManager.GetObject("pic22", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

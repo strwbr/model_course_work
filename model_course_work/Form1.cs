@@ -18,77 +18,79 @@ namespace model_course_work
         uint B = 0;
         bool is_start = false;
         uint C = 0;
-        Model Pr1 = new Model();
+        Model model = new Model();
 
         public Form1()
         {
             InitializeComponent();
             // Добавление строки в таблицы операндов
-            table_C.Rows.Add();
-            table_A.Rows.Add();
-            table_B.Rows.Add();
-            table_AM.Rows.Add();
-            table_BM.Rows.Add();
+            Table_C.Rows.Add();
+            Table_A.Rows.Add();
+            Table_B.Rows.Add();
+            Table_AM.Rows.Add();
+            Table_BM.Rows.Add();
 
-            textBox_a.Text = "0";
-            textBox_b.Text = "0";
+            InputA_tb.Text = "0";
+            InputB_tb.Text = "0";
             // Инициализация таблиц переменных
             InitDataTables();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            table_AM.ClearSelection();
-            table_BM.ClearSelection();
-            table_A.ClearSelection();
-            table_B.ClearSelection();
-            table_C.ClearSelection();
+            Table_AM.ClearSelection();
+            Table_BM.ClearSelection();
+            Table_A.ClearSelection();
+            Table_B.ClearSelection();
+            Table_C.ClearSelection();
         }
 
-        private void start_Click(object sender, EventArgs e) // пуск
+        private void StartBtn_Click(object sender, EventArgs e) // пуск
         {
             //Model Program = new Model(A, B, C, D);
 
-            groupBox2.Enabled = false;
-            groupBox4.Enabled = false;
-            table_A.ClearSelection();
-            table_B.ClearSelection();
-            start.Enabled = false;
+            ExeMode_gb.Enabled = false;
+            ModelMode_gb.Enabled = false;
 
-            Pr1 = new Model(A, B);
-            Pr1.Run();
+
+            Table_A.ClearSelection();
+            Table_B.ClearSelection();
+            StartBtn.Enabled = false;
+
+            model = new Model(A, B);
+            model.Run();
             
             is_start = true;
-            table_A.Enabled = false;
-            table_B.Enabled = false;
-            checkBox_a0.Checked = true;
+            Table_A.Enabled = false;
+            Table_B.Enabled = false;
+            gsaA0_cb.Checked = true;
             // Если выбран автоматический режим
             if (Auto_rb.Checked)
             {
-                while (!Pr1.Stop)
+                while (!model.Stop)
                 {
                     // Если выбран режим микропрограммы
                     if (MP_rb.Checked)
                     {
-                        Pr1.Microprogram();
-                        DisplayStatesInGSA(Pr1.State);
+                        model.Microprogram();
+                        DisplayStatesInGSA(model.State);
                     } // режим ОА и УА
                     else
-                        OAandYA();
+                        TactOAandYA();
                     // Вывод операндов на форму
-                    Pr1.ViewOperands(ref table_AM, ref table_BM, ref table_C, ref table_CR);
+                    model.ViewOperands(ref Table_AM, ref Table_BM, ref Table_C, ref table_CR);
                 }
-                C = Pr1.C;
+                C = model.C;
                 // Вывод результата - переменной С
                 ViewC();
 
                 is_start = false;
-                start.Enabled = false;
-                button_tact.Enabled = false;
+                StartBtn.Enabled = false;
+                TactBtn.Enabled = false;
                 return;
             }
             // Активация кнопки такта
-            button_tact.Enabled = true;
+            TactBtn.Enabled = true;
         }
         
         // Обработчик нажатия на кнопку Такт
@@ -99,27 +101,27 @@ namespace model_course_work
             {
                 if (is_start)
                 {
-                    if (!Pr1.Stop)
+                    if (!model.Stop)
                     {
                         if (MP_rb.Checked)
                         {
-                            Pr1.Microprogram();
-                            DisplayStatesInGSA(Pr1.State);
+                            model.Microprogram();
+                            DisplayStatesInGSA(model.State);
                         }
                         else
                         {
-                            OAandYA();
+                            TactOAandYA();
                         }
-                        Pr1.ViewOperands(ref table_AM, ref table_BM,
-                            ref table_C, ref table_CR);
+                        model.ViewOperands(ref Table_AM, ref Table_BM,
+                            ref Table_C, ref table_CR);
                     }
                     else
                     {
-                        C = Pr1.C;
+                        C = model.C;
                         ViewC();
                         is_start = false;
-                        start.Enabled = false;
-                        button_tact.Enabled = false;
+                        StartBtn.Enabled = false;
+                        TactBtn.Enabled = false;
                     }
                 }
             }
@@ -133,7 +135,7 @@ namespace model_course_work
             switch (state)
             {
                 case 0:
-                    checkBox_a0.Checked = true; break;
+                    gsaA0_cb.Checked = true; break;
                 case 1:
                     gsaA1_cb.Checked = true; break;
                 case 2:
@@ -162,23 +164,23 @@ namespace model_course_work
             //B = 0;
             //C = 0;
             is_start = false;
-            start.Enabled = true;
-            Pr1 = new Model();
-            button_tact.Enabled = false;
-            textBox_a.Text = "0";
-            textBox_b.Text = "0";
-            textBox_c.Text = "";
-            table_A.Enabled = true;
-            table_B.Enabled = true;
+            StartBtn.Enabled = true;
+            model = new Model();
+            TactBtn.Enabled = false;
+            InputA_tb.Text = "0";
+            InputB_tb.Text = "0";
+            ResC_tb.Text = "";
+            Table_A.Enabled = true;
+            Table_B.Enabled = true;
 
             ResetCheckboxesInGSA();
-            checkBox_a0.Checked = true;
+            gsaA0_cb.Checked = true;
 
             ResetCheckboxesInOAandYA();
             A0_cb.Checked = true;
 
-            groupBox2.Enabled = true;
-            groupBox4.Enabled = true;
+            ExeMode_gb.Enabled = true;
+            ModelMode_gb.Enabled = true;
             InitDataTables();
         }
 
@@ -187,10 +189,10 @@ namespace model_course_work
         {
             // Индекс колонки, на которую нажал пользователь
             int column = e.ColumnIndex;
-            table_A[column, 0].Value = (table_A[column, 0].Value.ToString() == "0") ? 1 : 0;
+            Table_A[column, 0].Value = (Table_A[column, 0].Value.ToString() == "0") ? 1 : 0;
 
-            A = GetUintValue(table_A);
-            textBox_a.Text = GetDecimalValue(table_A);
+            A = GetUintValue(Table_A);
+            InputA_tb.Text = GetDecimalValue(Table_A);
         }
 
         // Обработчик нажатия по ячейкам таблицы ввода числа В
@@ -198,10 +200,10 @@ namespace model_course_work
         {
             // Индекс колонки, на которую нажал пользователь
             int column = e.ColumnIndex;
-            table_B[column, 0].Value = (table_B[column, 0].Value.ToString() == "0") ? 1 : 0;
+            Table_B[column, 0].Value = (Table_B[column, 0].Value.ToString() == "0") ? 1 : 0;
 
-            B = GetUintValue(table_B);
-            textBox_b.Text = GetDecimalValue(table_B);
+            B = GetUintValue(Table_B);
+            InputB_tb.Text = GetDecimalValue(Table_B);
         }
 
         // Преобразование 2-ичной СЧ в 10-ичную
@@ -236,26 +238,27 @@ namespace model_course_work
             return resultStr;
         }
 
-        private void OAandYA()
+        private void TactOAandYA()
         {
-            ViewQ(Pr1.Dt);
+            ViewDt(model.Dt);
 
             // Память логических условий (ПЛУ)
-            Pr1.LogicCondMemory(Pr1.X);
-
+            model.LogicCondMemory(model.X);
+            model.StateMemory();
+            model.Decoder();
             // Комбинационная схема Y (КСY)
-            Pr1.KSY(Pr1.X);
-            ViewY(Pr1.Y);
+            model.KSY(/*model.X*/);
+            ViewY(model.Y);
 
             // Операционный автомат (ОА)
-            Pr1.OA(Pr1.Y);
-            ViewX(Pr1.X);
+            model.OA(model.Y);
+            ViewX(model.X);
 
             // Комбинация схема D (КСD)
-            Pr1.KSD(Pr1.X);
-            ViewDt(Pr1.Dt);
+            model.KSD(/*model.X*/);
+            ViewD(model.Dt);
 
-            StateChanged(Pr1.Dt);
+            ViewStates(model.Dt);
         }
 
         // Вывод Y на форму
@@ -308,19 +311,19 @@ namespace model_course_work
         // Вывод С на форму
         private void ViewC()
         {
-            if (Pr1.PP == 1)
+            if (model.PP == 1)
             {
-                textBox_c.Text = "Переполнение";
+                ResC_tb.Text = "Переполнение";
                 return;
             }
             //заполняем массив 0 и 1 в цикле по всему регистру С
             for (int i = 16; i >= 0; i--)
             {
-                table_C[i, 0].Value = C % 2;
+                Table_C[i, 0].Value = C % 2;
                 C = (UInt32)(C / 2);
             }
 
-            textBox_c.Text = GetDecimalValue(table_C);
+            ResC_tb.Text = GetDecimalValue(Table_C);
         }
 
         // Вывод X на форму
@@ -335,13 +338,13 @@ namespace model_course_work
                     case 1:
                         X1_cb.Checked = X[i]; break;
                     case 2:
-                        X2_cb.Checked = Pr1.Get_X2(); break;
+                        X2_cb.Checked = model.Get_X2(); break;
                     case 3:
-                        X3_cb.Checked = Pr1.Get_X3(); break;
+                        X3_cb.Checked = model.Get_X3(); break;
                     case 4:
                         X4_cb.Checked = X[i]; break;
                     case 5:
-                        X5_cb.Checked = Pr1.Get_X5(); break;
+                        X5_cb.Checked = model.Get_X5(); break;
                     case 6:
                         X6_cb.Checked = X[i]; break;
                 }
@@ -349,17 +352,17 @@ namespace model_course_work
         }
 
         // Вывод Q на форму
-        private void ViewQ(int Q)
+        private void ViewDt(int Q)
         {
             string strQ = ConvertTo4bit(Q);
-            Q0_cb.Checked = (strQ[3] != '0');
-            Q1_cb.Checked = (strQ[2] != '0');
-            Q2_cb.Checked = (strQ[1] != '0');
-            Q3_cb.Checked = (strQ[0] != '0');
+            Dt0_cb.Checked = (strQ[3] != '0');
+            Dt1_cb.Checked = (strQ[2] != '0');
+            Dt2_cb.Checked = (strQ[1] != '0');
+            Dt3_cb.Checked = (strQ[0] != '0');
         }
 
         // Вывод Dt на форму
-        private void ViewDt(int Dt)
+        private void ViewD(int Dt)
         {
             string strDt = ConvertTo4bit(Dt);
             D0_cb.Checked = (strDt[3] != '0');
@@ -369,7 +372,7 @@ namespace model_course_work
         }
 
         // Отображение состояния ГСА на форме
-        private void StateChanged(int state)
+        private void ViewStates(int state)
         {
             ResetCheckboxesInGSA();
             ResetCheckboxesForStatesInOAandYA();
@@ -419,18 +422,18 @@ namespace model_course_work
         {
             for (int i = 0; i < 16; i++)
             {
-                table_A[i, 0].Value = 0;
-                table_B[i, 0].Value = 0;
-                table_AM[i, 0].Value = 0;
-                table_BM[i, 0].Value = 0;
-                table_AM[i + 16, 0].Value = 0;
-                table_BM[i + 16, 0].Value = 0;
-                table_C[i, 0].Value = 0;
-                table_C[i, 0].Value = 0;
+                Table_A[i, 0].Value = 0;
+                Table_B[i, 0].Value = 0;
+                Table_AM[i, 0].Value = 0;
+                Table_BM[i, 0].Value = 0;
+                Table_AM[i + 16, 0].Value = 0;
+                Table_BM[i + 16, 0].Value = 0;
+                Table_C[i, 0].Value = 0;
+                Table_C[i, 0].Value = 0;
                 if (i < 4)
                     table_CR[i, 0].Value = 0;
             }
-            table_C[16, 0].Value = 0;
+            Table_C[16, 0].Value = 0;
         }
 
         // Преобразование числа в строку длиной 4 элемента 
@@ -446,7 +449,7 @@ namespace model_course_work
         // Сброс флажков состояний на ГСА
         private void ResetCheckboxesInGSA()
         {
-            foreach (CheckBox cb in panel1.Controls.OfType<CheckBox>())
+            foreach (CheckBox cb in GSA_panel.Controls.OfType<CheckBox>())
             {
                 cb.Checked = false;
             }
@@ -455,7 +458,7 @@ namespace model_course_work
         // Сброс всех флажков для ОА и УА
         private void ResetCheckboxesInOAandYA()
         {
-            foreach (CheckBox cb in panel2.Controls.OfType<CheckBox>())
+            foreach (CheckBox cb in OAandYA_panel.Controls.OfType<CheckBox>())
             {
                 cb.Checked = false;
             }
@@ -464,7 +467,7 @@ namespace model_course_work
         // Сброс флажков, отображающий состояния для ОА и УА
         private void ResetCheckboxesForStatesInOAandYA()
         {
-            foreach (CheckBox cb in panel2.Controls.OfType<CheckBox>())
+            foreach (CheckBox cb in OAandYA_panel.Controls.OfType<CheckBox>())
             {
                 string nameCb = cb.Text;
                 if (nameCb[0] == 'a')
