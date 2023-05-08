@@ -121,14 +121,17 @@
   <data name="oa_and_ya2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\oa_and_ya2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="oa_and_ya1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\oa_and_ya1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="oa_and_ya12" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\oa_and_ya12.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="oa_and_ya11" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\oa_and_ya11.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="pic22" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pic22.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="pic2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\pic2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="pic21" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pic21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -139,8 +142,8 @@
   <data name="gsa" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gsa.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="oa_and_ya1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\oa_and_ya1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="pic2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pic2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="pic1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pic1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -148,7 +151,7 @@
   <data name="oa_and_ya" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\oa_and_ya.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="oa_and_ya12" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\oa_and_ya12.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="gsa1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gsa1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

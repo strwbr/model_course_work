@@ -94,6 +94,7 @@
     <None Include="Resources\pic22.png" />
     <None Include="Resources\oa_and_ya2.png" />
     <None Include="Resources\oa_and_ya12.png" />
+    <None Include="Resources\gsa1.png" />
     <Content Include="Resources\oy.png" />
     <Content Include="Resources\pic1.png" />
     <Content Include="Resources\pic2.png" />

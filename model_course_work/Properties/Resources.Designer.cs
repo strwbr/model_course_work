@@ -73,6 +73,16 @@ namespace model_course_work.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap gsa1 {
+            get {
+                object obj = ResourceManager.GetObject("gsa1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap oa_and_ya {
             get {
                 object obj = ResourceManager.GetObject("oa_and_ya", resourceCulture);
