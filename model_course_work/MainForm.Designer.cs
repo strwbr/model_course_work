@@ -1,6 +1,6 @@
 ﻿namespace model_course_work
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Обязательная переменная конструктора.

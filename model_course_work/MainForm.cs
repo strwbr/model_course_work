@@ -13,7 +13,7 @@ using CheckBox = System.Windows.Forms.CheckBox;
 namespace model_course_work
 {
     // Класс визуального слоя
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         uint A = 0;
         uint B = 0;
@@ -21,7 +21,7 @@ namespace model_course_work
         uint C = 0;
         Model model = new Model();
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             // Добавление строки в таблицы операндов
