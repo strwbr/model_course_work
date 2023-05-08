@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace model_course_work
@@ -60,143 +56,66 @@ namespace model_course_work
         }
 
         // Запуск выполнения моделирования
-        public void Run()
-        {
-            start = true;
-        }
+        public void Run() => start = true;
 
         // Методы для X-в
         // Пуск
-        private bool X0()
-        {
-            return start;
-        }
+        private bool X0() => start;
         // BM = 0 - проверка деления на 0
-        private bool X1()
-        {
-            return BM == 0;
-        }
+        private bool X1() => BM == 0;
         // АМ = 0 - проверка, что делимое равно 0
-        private bool X2()
-        {
-            return AM == 0;
-        }
+        private bool X2() => AM == 0;
         // AM(31)
-        private bool X3()
-        {
-            return (AM & 0x80000000) != 0; // 1000 0000 0000 0000 0000 0000 0000 0000
-        }
+        private bool X3() => (AM & 0x80000000) != 0; // 1000 0000 0000 0000 0000 0000 0000 0000
         // CR = 0 - проверка окончания цикла
-        private bool X4()
-        {
-            return CR == 0;
-        }
+        private bool X4() => CR == 0;
         // С(0)
-        private bool X5()
-        {
-            return (C & 1) == 1; // 0000 ... 0001 = 1
-        }
+        private bool X5() => (C & 1) == 1; // 0000 ... 0001 = 1
         //A(15) xor B(15)
-        private bool X6()
-        {
-            return (A & 0x8000) != (B & 0x8000); //0000 0000 0000 0000 1000 0000 0000 0000
-        }
+        private bool X6() => (A & 0x8000) != (B & 0x8000); //0000 0000 0000 0000 1000 0000 0000 0000
 
         // Методы вычисления Y-в
         // АМ(29:15) := А(14:0)
-        private void Y1()
-        {
-            AM = (A & 0x7FFF) << 15; // 0000 0000 0000 0000 0111 1111 1111 1111
-        }
+        private void Y1() => AM = (A & 0x7FFF) << 15; // 0000 0000 0000 0000 0111 1111 1111 1111
         // ВМ(29:15) := В(14:0)
-        private void Y2()
-        {
-            BM = (B & 0x7FFF) << 15; // 0000 0000 0000 0000 0111 1111 1111 1111
-        }
+        private void Y2() => BM = (B & 0x7FFF) << 15; // 0000 0000 0000 0000 0111 1111 1111 1111
         // АМ(14:0) := 0 
-        private void Y3()
-        {
-            AM = AM & 0xFFFF8000; // 1111 1111 1111 1111 1000 0000 0000 0000
-        }
+        private void Y3() => AM = AM & 0xFFFF8000; // 1111 1111 1111 1111 1000 0000 0000 0000
         // ВМ(14:0) := 0
-        private void Y4()
-        {
-            BM = BM & 0xFFFF8000; // 1111 1111 1111 1111 1000 0000 0000 0000
-        }
+        private void Y4() => BM = BM & 0xFFFF8000; // 1111 1111 1111 1111 1000 0000 0000 0000
         //AM := AM + 11.!BM(29:0)+1
-        private void Y5()
-        {
-            AM += (~BM | 0xC0000000) + 1; //1100 0000 0000 0000 0000 0000 0000 0000
-        }
+        private void Y5() => AM += (~BM | 0xC0000000) + 1; //1100 0000 0000 0000 0000 0000 0000 0000
         //AM := AM + BM(29:0)
-        private void Y6()
-        {
-            AM += BM & 0x3FFFFFFF; // 0011 1111 1111 1111 1111 1111 1111 1111
-        }
+        private void Y6() => AM += BM & 0x3FFFFFFF; // 0011 1111 1111 1111 1111 1111 1111 1111
         // D: = AM
-        private void Y7()
-        {
-            D = AM;
-        }
+        private void Y7() => D = AM;
         // BM := R1(0.BM)
-        private void Y8()
-        {
-            BM = BM >> 1; 
-        }
+        private void Y8() => BM = BM >> 1;
         //C := 0
-        private void Y9()
-        {
-            C = 0;
-        }
+        private void Y9() => C = 0;
         // CR := 0
-        private void Y10()
-        {
-            CR = 0;
-        }
+        private void Y10() => CR = 0;
         // C := L1(C.1)
-        private void Y11()
-        {
-            C = (C << 1) | 1;
-        }
+        private void Y11() => C = (C << 1) | 1;
         // C := L1(C.0)
-        private void Y12()
-        {
-            C = C << 1;
-        }
+        private void Y12() => C = C << 1;
         // AM := D
-        private void Y13()
-        {
-            AM = D;
-        }
+        private void Y13() => AM = D;
         // CR := CR-1
         private void Y14()
         {
-            //Counter();
             if (CR == 0)
                 CR = 15;
             else CR--;
         }
         // С(16:1) := С(16:1)+1
-        private void Y15()
-        {
-            //C += 0x2;
-            C = (C & 0xFFFFFFFE) + 2; // 1111 1111 1111 1111 1111 1111 1111 1110
-        }
+        private void Y15() => C = (C & 0xFFFFFFFE) + 2; // 1111 1111 1111 1111 1111 1111 1111 1110
         //С(16) := 1
-        private void Y16() 
-        {
-            C = C | 0x10000; // 0000 0000 0000 0001 0000 0000 0000 0000
-        }
+        private void Y16() => C = C | 0x10000; // 0000 0000 0000 0001 0000 0000 0000 0000
         //ПП := 1
-        private void Y17()
-        {
-            PP = 1;
-        }
+        private void Y17() => PP = 1;
 
-        private void Yk()
-        {
-            Stop = true;
-        }
+        private void Yk() => Stop = true;
 
         // Режим микропрограммы
         public void Microprogram()

@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using CheckBox = System.Windows.Forms.CheckBox;
 
 namespace model_course_work
@@ -30,6 +23,7 @@ namespace model_course_work
             Table_B.Rows.Add();
             Table_AM.Rows.Add();
             Table_BM.Rows.Add();
+            table_CR.Rows.Add();
 
             InputA_tb.Text = "0";
             InputB_tb.Text = "0";
@@ -136,26 +130,16 @@ namespace model_course_work
             ResetCheckboxesInGSA();
             switch (state)
             {
-                case 0:
-                    gsaA0_cb.Checked = true; break;
-                case 1:
-                    gsaA1_cb.Checked = true; break;
-                case 2:
-                    gsaA2_cb.Checked = true; break;
-                case 3:
-                    gsaA3_cb.Checked = true; break;
-                case 4:
-                    gsaA4_cb.Checked = true; break;
-                case 5:
-                    gsaA5_cb.Checked = true; break;
-                case 6:
-                    gsaA6_cb.Checked = true; break;
-                case 7:
-                    gsaA7_cb.Checked = true; break;
-                case 8:
-                    gsaA8_cb.Checked = true; break;
-                case 9:
-                    gsaAk_cb.Checked = true; break;
+                case 0: gsaA0_cb.Checked = true; break;
+                case 1: gsaA1_cb.Checked = true; break;
+                case 2: gsaA2_cb.Checked = true; break;
+                case 3: gsaA3_cb.Checked = true; break;
+                case 4: gsaA4_cb.Checked = true; break;
+                case 5: gsaA5_cb.Checked = true; break;
+                case 6: gsaA6_cb.Checked = true; break;
+                case 7: gsaA7_cb.Checked = true; break;
+                case 8: gsaA8_cb.Checked = true; break;
+                case 9: gsaAk_cb.Checked = true; break;
             }
         }
 
@@ -309,13 +293,6 @@ namespace model_course_work
                 ResC_tb.Text = "Переполнение";
                 return;
             }
-            // Заполняем массив 0 и 1 в цикле по всему регистру С
-            //for (int i = 16; i >= 0; i--)
-            //{
-            //    Table_C[i, 0].Value = C % 2;
-            //    C = (UInt32)(C / 2);
-            //}
-
             // Вывод результата в 10-ичной СЧ
             ResC_tb.Text = GetDecimalValue(Table_C);
         }
@@ -469,9 +446,7 @@ namespace model_course_work
                 string nameCb = cb.Text;
                 // Сброс тех флажков, в тексте которых есть символ "а" - состояние
                 if (nameCb[0] == 'a')
-                {
                     cb.Checked = false;
-                }
             }
         }
     }
