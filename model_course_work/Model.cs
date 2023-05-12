@@ -22,11 +22,11 @@ namespace model_course_work
         public bool[] X { get; private set; } // Вектор X-в
         public bool[] Y { get; private set; } // Вектор У-в
         public int Dt { get; private set; } // Код состояния (kA)
-
         // Условия для ПЛУ
-        private bool _X2;
-        private bool _X3;
-        private bool _X5;
+        public bool _X2 { get; private set; }
+        public bool _X3 { get; private set; }
+        public bool _X5 { get; private set; }
+
         // Конструктор по умолчанию
         public Model() { }
         // Конструктор с параметрами А - делимое, В - делитель
@@ -117,8 +117,8 @@ namespace model_course_work
 
         private void Yk() => Stop = true;
 
-        // Режим микропрограммы
-        public void Microprogram()
+        // Режим микропрограммы - выполнение одного такта
+        public void MicroprogramTact()
         {
             switch (State)
             {
@@ -277,24 +277,24 @@ namespace model_course_work
         {
             bool[] A = states;
             // Вычисление операций У, который должны быть выполнены в этом такте
-            Y[0] = ((A[6] & X[4] & !_X5 & !X[6]) | (A[7] & !X[6]) | (A[8])); // yk
+            Y[0] = (A[6] & X[4] & !_X5 & !X[6]) | (A[7] & !X[6]) | (A[8]); // yk
             Y[1] = (A[0] & X[0]);
             Y[2] = Y[1];
             Y[3] = Y[1];
             Y[4] = Y[1];
-            Y[5] = ((A[1] & !X[1] & !_X2) | (A[3]) | (A[6] & !X[4]));
-            Y[6] = (A[2] & _X3);
-            Y[7] = ((A[2] & _X3) | (A[5]));
+            Y[5] = (A[1] & !X[1] & !_X2) | (A[3]) | (A[6] & !X[4]);
+            Y[6] = A[2] & _X3;
+            Y[7] = (A[2] & _X3) | (A[5]);
             Y[8] = Y[7];
-            Y[9] = ((A[2] & _X3) | (A[1] & !X[1] & _X2));
+            Y[9] = (A[2] & _X3) | (A[1] & !X[1] & _X2);
             Y[10] = Y[6];
-            Y[11] = (A[4] & !_X3);
-            Y[12] = (A[4] & _X3);
+            Y[11] = A[4] & !_X3;
+            Y[12] = A[4] & _X3;
             Y[13] = Y[12];
             Y[14] = A[5];
-            Y[15] = (A[6] & X[4] & _X5);
-            Y[16] = ((A[6] & X[4] & !_X5 & X[6]) | (A[7] & X[6]));
-            Y[17] = ((A[1] & X[1]) | (A[2] & !_X3));
+            Y[15] = A[6] & X[4] & _X5;
+            Y[16] = (A[6] & X[4] & !_X5 & X[6]) | (A[7] & X[6]);
+            Y[17] = (A[1] & X[1]) | (A[2] & !_X3);
         }
 
         // Комбинационная схема векторов D
@@ -309,7 +309,7 @@ namespace model_course_work
         }
 
         // Операционный автомат
-        public void OA(/*bool[] Y*/)
+        public void OA()
         {
             // Проход по вектору операций Y
             for (int i = 0; i < Y.Length; i++)
@@ -376,114 +376,5 @@ namespace model_course_work
                 tempCR = (Int32)(tempCR / 2);
             }
         }
-        // Геттеры для x для ПЛУ
-        public bool Get_X2() { return _X2; }
-        public bool Get_X3() { return _X3; }
-        public bool Get_X5() { return _X5; }
-
-
-        /*        public void Counter()
-        {
-            if (CR == 0) 
-                CR = 15;
-            else CR--;
-
-            //CR = (CR != 0) ? CR - 1 : 15;
-        }*/
-
-        // Комбинационная схема векторов Y
-        //public void KSY(bool[] vectorX)
-        //{
-        //    byte[] NotX = new byte[7];
-        //    byte[] X = new byte[7];
-        //    byte[] A = new byte[9];
-
-        //    byte tempX2 = Convert.ToByte(_X2);
-        //    byte tempX3 = Convert.ToByte(_X2);
-        //    byte tempX5 = Convert.ToByte(_X2);
-
-        //    byte NotX2 = (byte)(1 - tempX2);
-        //    byte NotX3 = (byte)(1 - tempX3);
-        //    byte NotX5 = ((byte)(1 - tempX5));
-
-        //    for(int i = 0; i < vectorX.Length; i++)
-        //    {
-        //        X[i] = Convert.ToByte(vectorX[i]);
-        //        NotX[i] = (byte)(1 - X[i]);
-        //    }
-
-        //    //if (_X3) { tempX3 = 1; NotX3 = 0; }
-        //    //else { tempX3 = 0; NotX3 = 1; }
-
-        //    //if (_X2) { tempX2 = 1; NotX2 = 0; }
-        //    //else { tempX2 = 0; NotX2 = 1; }
-
-        //    //if (_X5) { tempX5 = 1; NotX5 = 0; }
-        //    //else { tempX5 = 0; NotX5 = 1; }
-
-        //    A[Dt] = 1;
-
-        //    //for (int i = 0; i < 7; i++) //по всем иксам, 
-        //    //{
-        //    //    if (vectorX[i]) { X[i] = 1; NotX[i] = 0; }
-        //    //    else { X[i] = 0; NotX[i] = 1; }
-        //    //}
-
-        //    Y[0] = (byte)((A[6] & X[4] & NotX5 & NotX[6]) | (A[7] & NotX[6]) | (A[8])); //yk
-        //    Y[1] = (byte)(A[0] & X[0]);
-        //    Y[2] = Y[1];
-        //    Y[3] = Y[1];
-        //    Y[4] = Y[1];
-        //    Y[5] = (byte)((A[1] & NotX[1] & NotX2) | (A[3]) | (A[6] & NotX[4]));
-        //    Y[6] = (byte)(A[2] & tempX3);
-        //    Y[7] = (byte)((A[2] & tempX3) | (A[5]));
-        //    Y[8] = Y[7];
-        //    Y[9] = (byte)((A[2] & tempX3) | (A[1] & NotX[1] & tempX2));
-        //    Y[10] = Y[6];
-        //    Y[11] = (byte)(A[4] & NotX3);
-        //    Y[12] = (byte)(A[4] & tempX3);
-        //    Y[13] = Y[12];
-        //    Y[14] = A[5];
-        //    Y[15] = (byte)(A[6] & X[4] & tempX5);
-        //    Y[16] = (byte)((A[6] & X[4] & NotX5 & X[6]) | (A[7] & X[6]));
-        //    Y[17] = (byte)((A[1] & X[1]) | (A[2] & NotX3));
-        //}
-
-        //// Комбинационная схема векторов D
-        //public void KSD(bool[] vectorX)
-        //{
-        //    byte[] NotX = new byte[7];
-        //    byte[] X = new byte[7];
-        //    byte[] A = new byte[9];
-        //    byte Not2, Not3, Not5;
-        //    byte X2, X3, X5;
-
-        //    if (_X2) { X2 = 1; Not2 = 0; }
-        //    else { X2 = 0; Not2 = 1; }
-
-        //    if (_X3) { X3 = 1; Not3 = 0; }
-        //    else { X3 = 0; Not3 = 1; }
-
-        //    if (_X5) { X5 = 1; Not5 = 0; }
-        //    else { X5 = 0; Not5 = 1; }
-
-        //    for (int i = 0; i < 7; i++)
-        //    {
-        //        if (vectorX[i]) { X[i] = 1; NotX[i] = 0; }
-        //        else { X[i] = 0; NotX[i] = 1; }
-        //    }
-
-        //    A[Dt] = 1;
-
-        //    Dt = (byte)((A[0] & X[0]) | (A[2] & X3) | (A[4]) | (A[6] & X[4] & X5));
-
-        //    Dt += (byte)((A[1] & NotX[1] & Not2) | (A[2] & X3) | (A[5]) | (A[6] & X[4] & X5)) << 1;
-
-        //    Dt += (byte)((A[3]) | (A[6] & NotX[4]) | (A[4]) | (A[5]) | (A[6] & X[4] & X5)) << 2;
-
-        //    Dt += (byte)((A[1] & NotX[1] & X2) | (A[1] & X[1]) | (A[2] & Not3) |
-        //        (A[6] & X[4] & Not5 & X[6]) | (A[7] & X[6])) << 3;
-
-        //}
     }
 }

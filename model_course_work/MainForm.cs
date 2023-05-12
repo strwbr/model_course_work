@@ -68,7 +68,7 @@ namespace model_course_work
                     // Если выбран режим микропрограммы
                     if (MP_rb.Checked)
                     {
-                        model.Microprogram();
+                        model.MicroprogramTact();
                         DisplayStatesInGSA(model.State);
                     } // режим ОА и УА
                     else
@@ -101,7 +101,7 @@ namespace model_course_work
                     {
                         if (MP_rb.Checked)
                         {
-                            model.Microprogram();
+                            model.MicroprogramTact();
                             DisplayStatesInGSA(model.State);
                         }
                         else
@@ -217,15 +217,14 @@ namespace model_course_work
             {
                 result += Double.Parse(dataGridView[i, 0].Value.ToString()) * Math.Pow(2, -i);
             }
-            result = Math.Round(result, 5);
-
-            string resultStr = result.ToString();
-            // Получение знака числа
+            // Получение знака числа (проверка знакового бита)
             if (dataGridView[0, 0].Value.ToString() == "1")
-                resultStr = resultStr.Insert(0, "-");
+                result = -result;
 
-            return resultStr;
+            result = Math.Round(result, 5);
+            return result.ToString("0.#####");
         }
+
 
         // Один такт ОА и УА
         private void TactOAandYA()
@@ -238,20 +237,20 @@ namespace model_course_work
             model.StateMemory();
             // Дешифратор
             model.Decoder();
+            // Вывод текущего состояния на форму
+            ViewState(model.Dt);
             // Комбинационная схема Y (КСY)
-            model.KSY(/*model.X*/);
+            model.KSY();
             // Вывод вектора У на форму
             ViewY(model.Y);
             // Операционный автомат (ОА)
-            model.OA(/*model.Y*/);
+            model.OA();
             // Вывод вектора Х на форму
             ViewX(model.X);
             // Комбинация схема D (КСD)
-            model.KSD(/*model.X*/);
+            model.KSD();
             // Вывод триггеров D на форму
             ViewD(model.Dt);
-            // Вывод текущего состояния на форму
-            ViewState(model.Dt);
         }
 
         // Вывод вектора Y на форму
@@ -307,10 +306,10 @@ namespace model_course_work
                 {
                     case 0: X0_cb.Checked = X[i]; break;
                     case 1: X1_cb.Checked = X[i]; break;
-                    case 2: X2_cb.Checked = model.Get_X2(); break;
-                    case 3: X3_cb.Checked = model.Get_X3(); break;
+                    case 2: X2_cb.Checked = model._X2; break;
+                    case 3: X3_cb.Checked = model._X3; break;
                     case 4: X4_cb.Checked = X[i]; break;
-                    case 5: X5_cb.Checked = model.Get_X5(); break;
+                    case 5: X5_cb.Checked = model._X5; break;
                     case 6: X6_cb.Checked = X[i]; break;
                 }
             }
@@ -345,42 +344,15 @@ namespace model_course_work
             // Отображение текущего А
             switch (state)
             {
-                case 0:
-                    gsaAk_cb.Checked = true;
-                    A0_cb.Checked = true;
-                    break;
-                case 1:
-                    gsaA1_cb.Checked = true;
-                    A1_cb.Checked = true;
-                    break;
-                case 2:
-                    gsaA2_cb.Checked = true;
-                    A2_cb.Checked = true;
-                    break;
-                case 3:
-                    gsaA3_cb.Checked = true;
-                    A3_cb.Checked = true;
-                    break;
-                case 4:
-                    gsaA4_cb.Checked = true;
-                    A4_cb.Checked = true;
-                    break;
-                case 5:
-                    gsaA5_cb.Checked = true;
-                    A5_cb.Checked = true;
-                    break;
-                case 6:
-                    gsaA6_cb.Checked = true;
-                    A6_cb.Checked = true;
-                    break;
-                case 7:
-                    gsaA7_cb.Checked = true;
-                    A7_cb.Checked = true;
-                    break;
-                case 8:
-                    gsaA8_cb.Checked = true;
-                    A8_cb.Checked = true;
-                    break;
+                case 0: A0_cb.Checked = true; break;
+                case 1: A1_cb.Checked = true; break;
+                case 2: A2_cb.Checked = true; break;
+                case 3: A3_cb.Checked = true; break;
+                case 4: A4_cb.Checked = true; break;
+                case 5: A5_cb.Checked = true; break;
+                case 6: A6_cb.Checked = true; break;
+                case 7: A7_cb.Checked = true; break;
+                case 8: A8_cb.Checked = true; break;
             }
         }
 
